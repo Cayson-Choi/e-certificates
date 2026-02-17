@@ -1,0 +1,31 @@
+Total questions extracted: 17
+
+First question:
+{
+  "exam_name": "기사",
+  "subject_name": "미분류",
+  "question_code": "ELEC-S-XX-20220424-002",
+  "question_text": "강자성체의 B-H 곡선을 자세히 관찰하면 매끈한 곡선이 아 니라 자속밀도가 어느 순간 급격히 계단적으로 증가 또는 감 소하는 것을 알 수 있다. 이러한 현상을 무엇이라 하는가 ?",
+  "choice_1": "퀴리점 (Curie point)",
+  "choice_2": "자왜현상 (Magneto-striction)",
+  "choice_3": "바크하우젠 효과(Barkhausen effect)",
+  "choice_4": "자기여자 효과(Magnetic after effect)",
+  "answer": 3,
+  "explanation": null,
+  "image_url": null
+}
+
+Last question:
+{
+  "exam_name": "기사",
+  "subject_name": "제어공학",
+  "question_code": "ELEC-S-CT-20220424-100",
+  "question_text": "과전류차단기로 저압전로에 사용하는 범용의 퓨즈(「전기 전기기사                ◐2022년 04월 24일 필기 기출문제 ◑ 전자문제집 CBT : www.comcbt.com 최강 자격증 기출문제 전자문제집 CBT : www.comcbt.com용품 및 생활용품 안전관리법 」에서 규정하는 것을 제외한 다)의 정격전류가 16A인 경우 용단전류는 정격전류의 몇 배인가 ? (단, 퓨즈(gG)인 경우이다 .)",
+  "choice_1": "③④②③④②①④ ①",
+  "choice_2": "①④④①③③③① ③",
+  "choice_3": "①②④③②④③④ ③",
+  "choice_4": "④②③③③④③① ③",
+  "answer": 3,
+  "explanation": null,
+  "image_url": null
+}
