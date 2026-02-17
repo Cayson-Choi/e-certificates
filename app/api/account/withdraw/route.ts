@@ -51,53 +51,54 @@ export async function POST() {
     }
 
     // 4. 개인 응시 데이터 삭제 (개인정보 보호)
-    // attempt_items 삭제
-    const { error: deleteItemsError } = await supabase
-      .from('attempt_items')
-      .delete()
-      .in(
-        'attempt_id',
-        supabase.from('attempts').select('id').eq('user_id', userId)
-      )
-
-    if (deleteItemsError) {
-      console.error('Delete attempt_items error:', deleteItemsError)
-    }
-
-    // subject_scores 삭제
-    const { error: deleteScoresError } = await supabase
-      .from('subject_scores')
-      .delete()
-      .in(
-        'attempt_id',
-        supabase.from('attempts').select('id').eq('user_id', userId)
-      )
-
-    if (deleteScoresError) {
-      console.error('Delete subject_scores error:', deleteScoresError)
-    }
-
-    // attempt_questions 삭제
-    const { error: deleteQuestionsError } = await supabase
-      .from('attempt_questions')
-      .delete()
-      .in(
-        'attempt_id',
-        supabase.from('attempts').select('id').eq('user_id', userId)
-      )
-
-    if (deleteQuestionsError) {
-      console.error('Delete attempt_questions error:', deleteQuestionsError)
-    }
-
-    // attempts 삭제
-    const { error: deleteAttemptsError } = await supabase
+    // 먼저 사용자의 모든 attempt ID 조회
+    const { data: userAttempts } = await supabase
       .from('attempts')
-      .delete()
+      .select('id')
       .eq('user_id', userId)
 
-    if (deleteAttemptsError) {
-      console.error('Delete attempts error:', deleteAttemptsError)
+    const attemptIds = userAttempts?.map((a) => a.id) || []
+
+    if (attemptIds.length > 0) {
+      // attempt_items 삭제
+      const { error: deleteItemsError } = await supabase
+        .from('attempt_items')
+        .delete()
+        .in('attempt_id', attemptIds)
+
+      if (deleteItemsError) {
+        console.error('Delete attempt_items error:', deleteItemsError)
+      }
+
+      // subject_scores 삭제
+      const { error: deleteScoresError } = await supabase
+        .from('subject_scores')
+        .delete()
+        .in('attempt_id', attemptIds)
+
+      if (deleteScoresError) {
+        console.error('Delete subject_scores error:', deleteScoresError)
+      }
+
+      // attempt_questions 삭제
+      const { error: deleteQuestionsError } = await supabase
+        .from('attempt_questions')
+        .delete()
+        .in('attempt_id', attemptIds)
+
+      if (deleteQuestionsError) {
+        console.error('Delete attempt_questions error:', deleteQuestionsError)
+      }
+
+      // attempts 삭제
+      const { error: deleteAttemptsError } = await supabase
+        .from('attempts')
+        .delete()
+        .eq('user_id', userId)
+
+      if (deleteAttemptsError) {
+        console.error('Delete attempts error:', deleteAttemptsError)
+      }
     }
 
     // 5. profiles 삭제
