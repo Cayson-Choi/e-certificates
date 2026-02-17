@@ -8,10 +8,16 @@ export default function ProfilePage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [savingPassword, setSavingPassword] = useState(false)
   const [profile, setProfile] = useState<any>(null)
   const [formData, setFormData] = useState({
     affiliation: '',
     phone: '',
+  })
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
   })
 
   useEffect(() => {
@@ -64,6 +70,37 @@ export default function ProfilePage() {
       alert('오류가 발생했습니다')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSavingPassword(true)
+
+    try {
+      const res = await fetch('/api/account/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(passwordData),
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        alert('비밀번호가 변경되었습니다')
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: '',
+        })
+      } else {
+        alert(data.error || '비밀번호 변경 실패')
+      }
+    } catch (err) {
+      console.error('Password change error:', err)
+      alert('오류가 발생했습니다')
+    } finally {
+      setSavingPassword(false)
     }
   }
 
@@ -159,6 +196,74 @@ export default function ProfilePage() {
                 className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400"
               >
                 {saving ? '저장 중...' : '저장'}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* 비밀번호 변경 */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <h2 className="text-xl font-bold mb-4">🔒 비밀번호 변경</h2>
+          <form onSubmit={handlePasswordChange} className="space-y-4">
+            {/* 현재 비밀번호 */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                현재 비밀번호 *
+              </label>
+              <input
+                type="password"
+                value={passwordData.currentPassword}
+                onChange={(e) =>
+                  setPasswordData({ ...passwordData, currentPassword: e.target.value })
+                }
+                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="현재 비밀번호를 입력하세요"
+                required
+              />
+            </div>
+
+            {/* 새 비밀번호 */}
+            <div>
+              <label className="block text-sm font-medium mb-1">새 비밀번호 *</label>
+              <input
+                type="password"
+                value={passwordData.newPassword}
+                onChange={(e) =>
+                  setPasswordData({ ...passwordData, newPassword: e.target.value })
+                }
+                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="새 비밀번호 (최소 6자)"
+                required
+                minLength={6}
+              />
+            </div>
+
+            {/* 새 비밀번호 확인 */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                새 비밀번호 확인 *
+              </label>
+              <input
+                type="password"
+                value={passwordData.confirmPassword}
+                onChange={(e) =>
+                  setPasswordData({ ...passwordData, confirmPassword: e.target.value })
+                }
+                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="새 비밀번호를 다시 입력하세요"
+                required
+                minLength={6}
+              />
+            </div>
+
+            {/* 버튼 */}
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={savingPassword}
+                className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400"
+              >
+                {savingPassword ? '변경 중...' : '비밀번호 변경'}
               </button>
             </div>
           </form>
