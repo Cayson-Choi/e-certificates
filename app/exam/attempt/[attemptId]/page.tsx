@@ -4,6 +4,7 @@ import { useEffect, useState, use } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import MathText from '@/components/MathText'
+import ConfirmDialog from '@/components/ConfirmDialog'
 
 export default function ExamAttemptPage({
   params,
@@ -19,6 +20,12 @@ export default function ExamAttemptPage({
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [timeLeft, setTimeLeft] = useState(0) // 초 단위
+  const [timeExpired, setTimeExpired] = useState(false)
+
+  // 확인 대화상자 상태
+  const [confirmType, setConfirmType] = useState<
+    null | 'quit' | 'submit-unanswered' | 'submit'
+  >(null)
 
   useEffect(() => {
     loadPaper()
@@ -34,16 +41,15 @@ export default function ExamAttemptPage({
       const diff = Math.max(0, Math.floor((expiresAt - now) / 1000))
       setTimeLeft(diff)
 
-      if (diff === 0) {
-        alert('시험 시간이 종료되었습니다')
-        router.push('/')
+      if (diff === 0 && !timeExpired) {
+        setTimeExpired(true)
       }
     }
 
     updateTimer()
     const interval = setInterval(updateTimer, 1000)
     return () => clearInterval(interval)
-  }, [paper])
+  }, [paper, timeExpired])
 
   const loadPaper = async () => {
     try {
@@ -91,24 +97,19 @@ export default function ExamAttemptPage({
     }
   }
 
-  const handleSubmit = async () => {
+  const handleSubmitClick = () => {
     const answeredCount = answers.size
     const totalCount = paper?.questions.length || 0
 
     if (answeredCount < totalCount) {
-      if (
-        !confirm(
-          `${totalCount - answeredCount}문제를 풀지 않았습니다.\n정말 제출하시겠습니까?`
-        )
-      ) {
-        return
-      }
+      setConfirmType('submit-unanswered')
+    } else {
+      setConfirmType('submit')
     }
+  }
 
-    if (!confirm('시험을 제출하시겠습니까?\n제출 후에는 수정할 수 없습니다.')) {
-      return
-    }
-
+  const doSubmit = async () => {
+    setConfirmType(null)
     setSubmitting(true)
 
     try {
@@ -118,7 +119,7 @@ export default function ExamAttemptPage({
 
       if (!res.ok) {
         const data = await res.json()
-        alert(data.error || '제출에 실패했습니다')
+        setError(data.error || '제출에 실패했습니다')
         setSubmitting(false)
         return
       }
@@ -126,7 +127,7 @@ export default function ExamAttemptPage({
       // 결과 페이지로 이동
       router.push(`/exam/result/${attemptId}`)
     } catch (err) {
-      alert('오류가 발생했습니다')
+      setError('오류가 발생했습니다')
       setSubmitting(false)
     }
   }
@@ -184,11 +185,7 @@ export default function ExamAttemptPage({
                 <div className="text-xs text-gray-500 dark:text-gray-400">남은 시간</div>
               </div>
               <button
-                onClick={() => {
-                  if (confirm('시험을 중단하시겠습니까?\n작성한 답안은 저장되지 않습니다.')) {
-                    router.push('/')
-                  }
-                }}
+                onClick={() => setConfirmType('quit')}
                 className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
               >
                 중단하고 나가기
@@ -269,7 +266,7 @@ export default function ExamAttemptPage({
                 : `${totalCount - answeredCount}문제가 남았습니다`}
             </div>
             <button
-              onClick={handleSubmit}
+              onClick={handleSubmitClick}
               disabled={submitting}
               className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             >
@@ -278,6 +275,53 @@ export default function ExamAttemptPage({
           </div>
         </div>
       </div>
+
+      {/* 시간 만료 안내 */}
+      <ConfirmDialog
+        open={timeExpired}
+        title="시험 시간 종료"
+        message="시험 시간이 종료되었습니다."
+        confirmText="확인"
+        cancelText="확인"
+        onConfirm={() => router.push('/')}
+        onCancel={() => router.push('/')}
+      />
+
+      {/* 중단 확인 */}
+      <ConfirmDialog
+        open={confirmType === 'quit'}
+        title="시험 중단"
+        message="시험을 중단하시겠습니까?\n작성한 답안은 저장되지 않습니다."
+        confirmText="중단하기"
+        confirmColor="red"
+        onConfirm={() => {
+          setConfirmType(null)
+          router.push('/')
+        }}
+        onCancel={() => setConfirmType(null)}
+      />
+
+      {/* 미답 문제 제출 확인 */}
+      <ConfirmDialog
+        open={confirmType === 'submit-unanswered'}
+        title="미완료 문제 있음"
+        message={`${totalCount - answeredCount}문제를 풀지 않았습니다.\n정말 제출하시겠습니까?`}
+        confirmText="제출하기"
+        confirmColor="green"
+        onConfirm={() => setConfirmType('submit')}
+        onCancel={() => setConfirmType(null)}
+      />
+
+      {/* 최종 제출 확인 */}
+      <ConfirmDialog
+        open={confirmType === 'submit'}
+        title="시험 제출"
+        message="시험을 제출하시겠습니까?\n제출 후에는 수정할 수 없습니다."
+        confirmText="제출"
+        confirmColor="green"
+        onConfirm={doSubmit}
+        onCancel={() => setConfirmType(null)}
+      />
     </div>
   )
 }

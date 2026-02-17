@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import ConfirmDialog from '@/components/ConfirmDialog'
 
 export default function ExamStartPage({ params }: { params: Promise<{ examId: string }> }) {
   const router = useRouter()
@@ -13,6 +14,7 @@ export default function ExamStartPage({ params }: { params: Promise<{ examId: st
   const [starting, setStarting] = useState(false)
   const [error, setError] = useState('')
   const [activeAttempt, setActiveAttempt] = useState<any>(null)
+  const [showAbandonConfirm, setShowAbandonConfirm] = useState(false)
 
   useEffect(() => {
     params.then(({ examId }) => {
@@ -89,13 +91,7 @@ export default function ExamStartPage({ params }: { params: Promise<{ examId: st
   }
 
   const handleAbandonAndStart = () => {
-    if (
-      confirm(
-        `진행 중인 ${activeAttempt.exam_name} 시험을 중단하시겠습니까?\n중단하면 해당 시험의 답안은 모두 삭제됩니다.`
-      )
-    ) {
-      handleStart(true)
-    }
+    setShowAbandonConfirm(true)
   }
 
   if (loading) {
@@ -263,6 +259,20 @@ export default function ExamStartPage({ params }: { params: Promise<{ examId: st
           </div>
         </div>
       </div>
+
+      {/* 기존 시험 중단 확인 */}
+      <ConfirmDialog
+        open={showAbandonConfirm}
+        title="진행 중인 시험 중단"
+        message={`진행 중인 ${activeAttempt?.exam_name} 시험을 중단하시겠습니까?\n중단하면 해당 시험의 답안은 모두 삭제됩니다.`}
+        confirmText="중단하고 새 시험 시작"
+        confirmColor="red"
+        onConfirm={() => {
+          setShowAbandonConfirm(false)
+          handleStart(true)
+        }}
+        onCancel={() => setShowAbandonConfirm(false)}
+      />
     </div>
   )
 }
