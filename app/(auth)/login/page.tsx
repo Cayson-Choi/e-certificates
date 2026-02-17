@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -23,15 +22,16 @@ export default function LoginPage() {
     const password = formData.get('password') as string
 
     try {
-      const supabase = createClient()
-
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
       })
 
-      if (signInError) {
-        setError(signInError.message)
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || '로그인에 실패했습니다')
         return
       }
 
