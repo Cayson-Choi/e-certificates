@@ -133,20 +133,20 @@ export default function ExamAttemptPage({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-lg">시험지를 불러오는 중...</div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-lg dark:text-white">시험지를 불러오는 중...</div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <div className="text-red-600 mb-4">{error}</div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 border dark:border-gray-700">
+          <div className="text-red-600 dark:text-red-400 mb-4">{error}</div>
           <button
             onClick={() => router.push('/')}
-            className="text-blue-600 hover:underline"
+            className="text-blue-600 dark:text-blue-400 hover:underline"
           >
             홈으로 돌아가기
           </button>
@@ -161,26 +161,26 @@ export default function ExamAttemptPage({
   const totalCount = paper?.questions.length || 0
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* 상단 고정 바 */}
-      <div className="bg-white border-b sticky top-0 z-10 shadow-sm">
+      <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-10 shadow-sm">
         <div className="max-w-5xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-xl font-bold">{paper.exam_name}</h1>
-              <div className="text-sm text-gray-600 mt-1">
+              <h1 className="text-xl font-bold dark:text-white">{paper.exam_name}</h1>
+              <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 답안: {answeredCount} / {totalCount}
               </div>
             </div>
             <div className="text-right">
               <div
                 className={`text-2xl font-bold ${
-                  timeLeft < 300 ? 'text-red-600' : 'text-blue-600'
+                  timeLeft < 300 ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'
                 }`}
               >
                 {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
               </div>
-              <div className="text-sm text-gray-600">남은 시간</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">남은 시간</div>
             </div>
           </div>
         </div>
@@ -192,17 +192,17 @@ export default function ExamAttemptPage({
           {paper.questions.map((question: any, index: number) => (
             <div
               key={question.question_id}
-              className="bg-white rounded-lg shadow-md p-6"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border dark:border-gray-700"
             >
               <div className="flex items-start gap-4 mb-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-700">
+                <div className="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center font-bold text-blue-700 dark:text-blue-300">
                   {index + 1}
                 </div>
                 <div className="flex-1">
-                  <div className="text-sm text-gray-600 mb-2">{question.subject_name}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">{question.subject_name}</div>
                   <MathText
                     text={question.question_text}
-                    className="text-lg font-medium mb-4 block"
+                    className="text-lg font-medium mb-4 block dark:text-white"
                   />
 
                   {question.image_url && (
@@ -224,8 +224,8 @@ export default function ExamAttemptPage({
                         key={choice}
                         className={`flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${
                           answers.get(question.question_id) === choice
-                            ? 'border-blue-500 bg-blue-50'
-                            : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-400'
+                            : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-gray-50 dark:hover:bg-gray-700'
                         }`}
                       >
                         <input
@@ -235,7 +235,7 @@ export default function ExamAttemptPage({
                           onChange={() => handleAnswer(question.question_id, choice)}
                           className="mt-1"
                         />
-                        <span className="flex-1">
+                        <span className="flex-1 dark:text-gray-200">
                           {choice}.{' '}
                           <MathText text={question[`choice_${choice}`]} />
                         </span>
@@ -249,9 +249,9 @@ export default function ExamAttemptPage({
         </div>
 
         {/* 제출 버튼 */}
-        <div className="mt-8 bg-white rounded-lg shadow-md p-6">
+        <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border dark:border-gray-700">
           <div className="flex justify-between items-center">
-            <div className="text-gray-600">
+            <div className="text-gray-600 dark:text-gray-400">
               {answeredCount === totalCount
                 ? '모든 문제를 풀었습니다'
                 : `${totalCount - answeredCount}문제가 남았습니다`}
