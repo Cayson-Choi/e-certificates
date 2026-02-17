@@ -18,7 +18,7 @@ export async function GET() {
 
     const { data: profile, error } = await supabase
       .from('profiles')
-      .select('id, name, email, affiliation, phone, created_at')
+      .select('id, name, affiliation, phone, created_at')
       .eq('id', user.id)
       .single()
 
@@ -26,7 +26,13 @@ export async function GET() {
       return NextResponse.json({ error: '프로필 조회 실패' }, { status: 500 })
     }
 
-    return NextResponse.json({ profile })
+    // email은 auth.users에서 가져오기
+    return NextResponse.json({
+      profile: {
+        ...profile,
+        email: user.email,
+      },
+    })
   } catch (error) {
     console.error('Profile GET error:', error)
     return NextResponse.json({ error: '서버 오류' }, { status: 500 })
