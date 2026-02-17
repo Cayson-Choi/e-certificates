@@ -1,11 +1,118 @@
 'use client'
 
-import { useEffect, useState, use } from 'react'
+import { useEffect, useState, useCallback, use, memo } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import MathText from '@/components/MathText'
 import ConfirmDialog from '@/components/ConfirmDialog'
 
+// --- ExamTimer: isolated timer component so ticks don't re-render the question list ---
+function ExamTimer({ expiresAt, onExpire }: { expiresAt: string; onExpire: () => void }) {
+  const [timeLeft, setTimeLeft] = useState(() => {
+    const diff = Math.max(0, Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000))
+    return diff
+  })
+
+  useEffect(() => {
+    const target = new Date(expiresAt).getTime()
+
+    const update = () => {
+      const diff = Math.max(0, Math.floor((target - Date.now()) / 1000))
+      setTimeLeft(diff)
+      if (diff === 0) onExpire()
+    }
+
+    update()
+    const interval = setInterval(update, 1000)
+    return () => clearInterval(interval)
+  }, [expiresAt, onExpire])
+
+  const minutes = Math.floor(timeLeft / 60)
+  const seconds = timeLeft % 60
+
+  return (
+    <div className="text-right">
+      <div
+        className={`text-2xl font-bold ${
+          timeLeft < 300 ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'
+        }`}
+      >
+        {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+      </div>
+      <div className="text-xs text-gray-500 dark:text-gray-400">남은 시간</div>
+    </div>
+  )
+}
+
+// --- QuestionCard: memoized so only the card whose answer changed re-renders ---
+const QuestionCard = memo(function QuestionCard({
+  question,
+  index,
+  selectedAnswer,
+  onAnswer,
+}: {
+  question: any
+  index: number
+  selectedAnswer: number | undefined
+  onAnswer: (questionId: number, choice: number) => void
+}) {
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border dark:border-gray-700">
+      <div className="flex items-start gap-4 mb-4">
+        <div className="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center font-bold text-blue-700 dark:text-blue-300">
+          {index + 1}
+        </div>
+        <div className="flex-1">
+          <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">{question.subject_name}</div>
+          <MathText
+            text={question.question_text}
+            className="text-lg font-medium mb-4 block dark:text-white"
+          />
+
+          {question.image_url && (
+            <div className="mb-4 relative w-full max-w-lg">
+              <Image
+                src={question.image_url}
+                alt="문제 이미지"
+                width={600}
+                height={400}
+                className="w-full h-auto rounded"
+                loading="lazy"
+              />
+            </div>
+          )}
+
+          <div className="space-y-3">
+            {[1, 2, 3, 4].map((choice) => (
+              <label
+                key={choice}
+                className={`flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${
+                  selectedAnswer === choice
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-400'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name={`question-${question.question_id}`}
+                  checked={selectedAnswer === choice}
+                  onChange={() => onAnswer(question.question_id, choice)}
+                  className="mt-1"
+                />
+                <span className="flex-1 dark:text-gray-200">
+                  {choice}.{' '}
+                  <MathText text={question[`choice_${choice}`]} />
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+})
+
+// --- Main page component ---
 export default function ExamAttemptPage({
   params,
 }: {
@@ -19,7 +126,6 @@ export default function ExamAttemptPage({
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
-  const [timeLeft, setTimeLeft] = useState(0) // 초 단위
   const [timeExpired, setTimeExpired] = useState(false)
 
   // 확인 대화상자 상태
@@ -30,26 +136,6 @@ export default function ExamAttemptPage({
   useEffect(() => {
     loadPaper()
   }, [attemptId])
-
-  // 타이머
-  useEffect(() => {
-    if (!paper) return
-
-    const expiresAt = new Date(paper.expires_at).getTime()
-    const updateTimer = () => {
-      const now = Date.now()
-      const diff = Math.max(0, Math.floor((expiresAt - now) / 1000))
-      setTimeLeft(diff)
-
-      if (diff === 0 && !timeExpired) {
-        setTimeExpired(true)
-      }
-    }
-
-    updateTimer()
-    const interval = setInterval(updateTimer, 1000)
-    return () => clearInterval(interval)
-  }, [paper, timeExpired])
 
   const loadPaper = async () => {
     try {
@@ -64,7 +150,7 @@ export default function ExamAttemptPage({
       setPaper(data)
 
       // 기존 답안 로드
-      const newAnswers = new Map()
+      const newAnswers = new Map<number, number>()
       data.questions.forEach((q: any) => {
         if (q.selected) {
           newAnswers.set(q.question_id, q.selected)
@@ -79,11 +165,13 @@ export default function ExamAttemptPage({
     }
   }
 
-  const handleAnswer = async (questionId: number, choice: number) => {
+  const handleAnswer = useCallback(async (questionId: number, choice: number) => {
     // UI 업데이트
-    const newAnswers = new Map(answers)
-    newAnswers.set(questionId, choice)
-    setAnswers(newAnswers)
+    setAnswers((prev) => {
+      const next = new Map(prev)
+      next.set(questionId, choice)
+      return next
+    })
 
     // 서버에 저장
     try {
@@ -95,7 +183,11 @@ export default function ExamAttemptPage({
     } catch (err) {
       console.error('답안 저장 실패:', err)
     }
-  }
+  }, [attemptId])
+
+  const handleExpire = useCallback(() => {
+    setTimeExpired(true)
+  }, [])
 
   const handleSubmitClick = () => {
     const answeredCount = answers.size
@@ -156,8 +248,6 @@ export default function ExamAttemptPage({
     )
   }
 
-  const minutes = Math.floor(timeLeft / 60)
-  const seconds = timeLeft % 60
   const answeredCount = answers.size
   const totalCount = paper?.questions.length || 0
 
@@ -174,16 +264,7 @@ export default function ExamAttemptPage({
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="text-right">
-                <div
-                  className={`text-2xl font-bold ${
-                    timeLeft < 300 ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'
-                  }`}
-                >
-                  {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">남은 시간</div>
-              </div>
+              <ExamTimer expiresAt={paper.expires_at} onExpire={handleExpire} />
               <button
                 onClick={() => setConfirmType('quit')}
                 className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
@@ -199,61 +280,13 @@ export default function ExamAttemptPage({
       <div className="max-w-5xl mx-auto px-4 py-8 pt-24">
         <div className="space-y-8">
           {paper.questions.map((question: any, index: number) => (
-            <div
+            <QuestionCard
               key={question.question_id}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border dark:border-gray-700"
-            >
-              <div className="flex items-start gap-4 mb-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center font-bold text-blue-700 dark:text-blue-300">
-                  {index + 1}
-                </div>
-                <div className="flex-1">
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">{question.subject_name}</div>
-                  <MathText
-                    text={question.question_text}
-                    className="text-lg font-medium mb-4 block dark:text-white"
-                  />
-
-                  {question.image_url && (
-                    <div className="mb-4 relative w-full max-w-lg">
-                      <Image
-                        src={question.image_url}
-                        alt="문제 이미지"
-                        width={600}
-                        height={400}
-                        className="w-full h-auto rounded"
-                        loading="lazy"
-                      />
-                    </div>
-                  )}
-
-                  <div className="space-y-3">
-                    {[1, 2, 3, 4].map((choice) => (
-                      <label
-                        key={choice}
-                        className={`flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${
-                          answers.get(question.question_id) === choice
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-400'
-                            : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-gray-50 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name={`question-${question.question_id}`}
-                          checked={answers.get(question.question_id) === choice}
-                          onChange={() => handleAnswer(question.question_id, choice)}
-                          className="mt-1"
-                        />
-                        <span className="flex-1 dark:text-gray-200">
-                          {choice}.{' '}
-                          <MathText text={question[`choice_${choice}`]} />
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+              question={question}
+              index={index}
+              selectedAnswer={answers.get(question.question_id)}
+              onAnswer={handleAnswer}
+            />
           ))}
         </div>
 

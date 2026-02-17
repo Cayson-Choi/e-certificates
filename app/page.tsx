@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import Leaderboard from '@/components/Leaderboard'
 
+export const dynamic = 'force-dynamic'
+
 const examCardStyles = [
   'from-blue-500 to-blue-700',
   'from-purple-500 to-purple-700',

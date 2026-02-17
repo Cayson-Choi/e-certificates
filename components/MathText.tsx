@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * MathText Component
  *
@@ -9,29 +11,31 @@
  * - x<sup>2</sup> + y<sup>2</sup> → x² + y²
  */
 
+import { memo, useMemo } from 'react'
+
 interface MathTextProps {
   text: string
   className?: string
 }
 
-export default function MathText({ text, className = '' }: MathTextProps) {
-  // Sanitize HTML: only allow <sub>, <sup>, and <frac> tags
-  const sanitizeHtml = (html: string): string => {
-    // First, convert <frac> tags to proper fraction HTML
-    let processed = html.replace(
-      /<frac>([^<]+)\/([^<]+)<\/frac>/gi,
-      '<sup>$1</sup>⁄<sub>$2</sub>'
-    )
+// Sanitize HTML: only allow <sub>, <sup>, and <frac> tags
+function sanitizeHtml(html: string): string {
+  // First, convert <frac> tags to proper fraction HTML
+  let processed = html.replace(
+    /<frac>([^<]+)\/([^<]+)<\/frac>/gi,
+    '<sup>$1</sup>⁄<sub>$2</sub>'
+  )
 
-    // Allow only <sub>, </sub>, <sup>, </sup> tags
-    processed = processed
-      .replace(/<(?!\/?(?:sub|sup)\b)[^>]*>/gi, '') // Remove all tags except sub/sup
-      .replace(/<(sub|sup)([^>]*)>/gi, '<$1>') // Remove attributes from sub/sup tags
+  // Allow only <sub>, </sub>, <sup>, </sup> tags
+  processed = processed
+    .replace(/<(?!\/?(?:sub|sup)\b)[^>]*>/gi, '') // Remove all tags except sub/sup
+    .replace(/<(sub|sup)([^>]*)>/gi, '<$1>') // Remove attributes from sub/sup tags
 
-    return processed
-  }
+  return processed
+}
 
-  const sanitizedText = sanitizeHtml(text)
+export default memo(function MathText({ text, className = '' }: MathTextProps) {
+  const sanitizedText = useMemo(() => sanitizeHtml(text), [text])
 
   return (
     <span
@@ -40,4 +44,4 @@ export default function MathText({ text, className = '' }: MathTextProps) {
       style={{ color: 'inherit' }}
     />
   )
-}
+})
