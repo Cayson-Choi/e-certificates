@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import MathText from '@/components/MathText'
+import ConfirmDialog from '@/components/ConfirmDialog'
 
 const QuestionSplitEditor = lazy(() => import('@/components/QuestionSplitEditor'))
 const BulkUploadSplitEditor = lazy(() => import('@/components/BulkUploadSplitEditor'))
@@ -120,24 +121,34 @@ export default function AdminQuestionsPage() {
     }
   }
 
+  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false)
+
   const handleDelete = async (id: number) => {
-    if (!confirm('정말 삭제하시겠습니까?')) return
+    setPendingDeleteId(id)
+    setShowDeleteConfirm(true)
+  }
+
+  const confirmDelete = async () => {
+    if (!pendingDeleteId) return
+    setShowDeleteConfirm(false)
 
     try {
-      const res = await fetch(`/api/admin/questions/${id}`, {
+      const res = await fetch(`/api/admin/questions/${pendingDeleteId}`, {
         method: 'DELETE',
       })
 
       if (res.ok) {
-        alert('삭제되었습니다')
         loadQuestions()
       } else {
         const data = await res.json()
-        alert(data.error || '삭제 실패')
+        console.error('Delete failed:', data.error || '삭제 실패')
       }
     } catch (err) {
       console.error('Delete error:', err)
-      alert('삭제 중 오류가 발생했습니다')
+    } finally {
+      setPendingDeleteId(null)
     }
   }
 
@@ -162,15 +173,13 @@ export default function AdminQuestionsPage() {
     setSelectedQuestions(newSelected)
   }
 
-  const handleBulkDelete = async () => {
-    if (selectedQuestions.size === 0) {
-      alert('삭제할 문제를 선택해주세요')
-      return
-    }
+  const handleBulkDelete = () => {
+    if (selectedQuestions.size === 0) return
+    setShowBulkDeleteConfirm(true)
+  }
 
-    if (!confirm(`선택한 ${selectedQuestions.size}개 문제를 삭제하시겠습니까?`)) {
-      return
-    }
+  const confirmBulkDelete = async () => {
+    setShowBulkDeleteConfirm(false)
 
     try {
       const deletePromises = Array.from(selectedQuestions).map((id) =>
@@ -178,12 +187,10 @@ export default function AdminQuestionsPage() {
       )
 
       await Promise.all(deletePromises)
-      alert('삭제되었습니다')
       setSelectedQuestions(new Set())
       loadQuestions()
     } catch (err) {
       console.error('Bulk delete error:', err)
-      alert('삭제 중 오류가 발생했습니다')
     }
   }
 
@@ -507,6 +514,26 @@ export default function AdminQuestionsPage() {
             />
           </Suspense>
         )}
+
+        <ConfirmDialog
+          open={showDeleteConfirm}
+          title="문제 삭제"
+          message="정말 삭제하시겠습니까?"
+          confirmText="삭제"
+          confirmColor="red"
+          onConfirm={confirmDelete}
+          onCancel={() => { setShowDeleteConfirm(false); setPendingDeleteId(null) }}
+        />
+
+        <ConfirmDialog
+          open={showBulkDeleteConfirm}
+          title="일괄 삭제"
+          message={`선택한 ${selectedQuestions.size}개 문제를 삭제하시겠습니까?`}
+          confirmText="삭제"
+          confirmColor="red"
+          onConfirm={confirmBulkDelete}
+          onCancel={() => setShowBulkDeleteConfirm(false)}
+        />
       </div>
     </div>
   )

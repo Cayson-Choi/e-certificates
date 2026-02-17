@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import ConfirmDialog from '@/components/ConfirmDialog'
 
 export default function AdminUsersPage() {
   const router = useRouter()
@@ -107,10 +108,17 @@ export default function AdminUsersPage() {
     }
   }
 
-  const toggleAdmin = async (userId: string, currentStatus: boolean) => {
-    if (!confirm(`${currentStatus ? '관리자 권한을 해제' : '관리자 권한을 부여'}하시겠습니까?`)) {
-      return
-    }
+  const [pendingToggle, setPendingToggle] = useState<{ userId: string; currentStatus: boolean } | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<{ userId: string; userName: string } | null>(null)
+
+  const toggleAdmin = (userId: string, currentStatus: boolean) => {
+    setPendingToggle({ userId, currentStatus })
+  }
+
+  const confirmToggleAdmin = async () => {
+    if (!pendingToggle) return
+    const { userId, currentStatus } = pendingToggle
+    setPendingToggle(null)
 
     try {
       const res = await fetch(`/api/admin/users/${userId}`, {
@@ -120,26 +128,24 @@ export default function AdminUsersPage() {
       })
 
       if (res.ok) {
-        alert('권한이 변경되었습니다')
         loadUsers()
       } else {
         const data = await res.json()
-        alert(data.error || '권한 변경 실패')
+        console.error('Toggle admin failed:', data.error || '권한 변경 실패')
       }
     } catch (err) {
       console.error('Toggle admin error:', err)
-      alert('오류가 발생했습니다')
     }
   }
 
-  const deleteUser = async (userId: string, userName: string) => {
-    if (
-      !confirm(
-        `정말로 "${userName}" 회원을 삭제하시겠습니까?\n\n⚠️ 이 작업은 되돌릴 수 없으며, 해당 회원의 모든 데이터가 삭제됩니다.`
-      )
-    ) {
-      return
-    }
+  const deleteUser = (userId: string, userName: string) => {
+    setPendingDelete({ userId, userName })
+  }
+
+  const confirmDeleteUser = async () => {
+    if (!pendingDelete) return
+    const { userId } = pendingDelete
+    setPendingDelete(null)
 
     try {
       const res = await fetch(`/api/admin/users/${userId}`, {
@@ -147,15 +153,13 @@ export default function AdminUsersPage() {
       })
 
       if (res.ok) {
-        alert('회원이 삭제되었습니다')
         loadUsers()
       } else {
         const data = await res.json()
-        alert(data.error || '회원 삭제 실패')
+        console.error('Delete user failed:', data.error || '회원 삭제 실패')
       }
     } catch (err) {
       console.error('Delete user error:', err)
-      alert('오류가 발생했습니다')
     }
   }
 
@@ -445,6 +449,26 @@ export default function AdminUsersPage() {
         >
           ← 관리자 페이지
         </Link>
+
+        <ConfirmDialog
+          open={!!pendingToggle}
+          title="권한 변경"
+          message={`${pendingToggle?.currentStatus ? '관리자 권한을 해제' : '관리자 권한을 부여'}하시겠습니까?`}
+          confirmText="변경"
+          confirmColor="blue"
+          onConfirm={confirmToggleAdmin}
+          onCancel={() => setPendingToggle(null)}
+        />
+
+        <ConfirmDialog
+          open={!!pendingDelete}
+          title="회원 삭제"
+          message={`정말로 "${pendingDelete?.userName}" 회원을 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없으며, 해당 회원의 모든 데이터가 삭제됩니다.`}
+          confirmText="삭제"
+          confirmColor="red"
+          onConfirm={confirmDeleteUser}
+          onCancel={() => setPendingDelete(null)}
+        />
       </div>
     </div>
   )

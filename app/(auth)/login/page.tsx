@@ -16,6 +16,7 @@ function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirectTo') || '/'
+  const signupSuccess = searchParams.get('signup') === 'success'
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -56,6 +57,12 @@ function LoginContent() {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 border dark:border-gray-700">
       <h1 className="text-2xl font-bold text-center mb-6 dark:text-white">로그인</h1>
+
+      {signupSuccess && (
+        <div className="mb-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded text-sm">
+          회원가입이 완료되었습니다. 로그인해주세요.
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>

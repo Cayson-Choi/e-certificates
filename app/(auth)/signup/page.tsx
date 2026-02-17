@@ -72,9 +72,8 @@ export default function SignupPage() {
         return
       }
 
-      // 회원가입 성공
-      alert('회원가입이 완료되었습니다. 로그인해주세요.')
-      router.push('/login')
+      // 회원가입 성공 → 바로 로그인 페이지로 이동
+      router.push('/login?signup=success')
     } catch (err) {
       setError('오류가 발생했습니다')
     } finally {

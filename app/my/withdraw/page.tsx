@@ -3,23 +3,19 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import ConfirmDialog from '@/components/ConfirmDialog'
 
 export default function WithdrawPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [confirmed, setConfirmed] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [error, setError] = useState('')
 
   const handleWithdraw = async () => {
-    if (!confirmed) {
-      alert('탈퇴 확인 체크박스를 선택해주세요')
-      return
-    }
-
-    if (!confirm('정말로 탈퇴하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.')) {
-      return
-    }
-
+    setShowConfirm(false)
     setLoading(true)
+    setError('')
 
     try {
       const res = await fetch('/api/account/withdraw', {
@@ -27,15 +23,14 @@ export default function WithdrawPage() {
       })
 
       if (res.ok) {
-        alert('회원 탈퇴가 완료되었습니다.\n그동안 이용해 주셔서 감사합니다.')
         router.push('/')
       } else {
         const data = await res.json()
-        alert(data.error || '탈퇴 처리 실패')
+        setError(data.error || '탈퇴 처리 실패')
       }
     } catch (err) {
       console.error('Withdraw error:', err)
-      alert('오류가 발생했습니다')
+      setError('오류가 발생했습니다')
     } finally {
       setLoading(false)
     }
@@ -95,6 +90,12 @@ export default function WithdrawPage() {
             </label>
           </div>
 
+          {error && (
+            <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+              {error}
+            </div>
+          )}
+
           {/* 버튼 */}
           <div className="flex gap-4 mt-6">
             <Link
@@ -104,7 +105,7 @@ export default function WithdrawPage() {
               취소
             </Link>
             <button
-              onClick={handleWithdraw}
+              onClick={() => setShowConfirm(true)}
               disabled={loading || !confirmed}
               className="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
@@ -113,6 +114,16 @@ export default function WithdrawPage() {
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={showConfirm}
+        title="회원 탈퇴"
+        message={'정말로 탈퇴하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.'}
+        confirmText="탈퇴"
+        confirmColor="red"
+        onConfirm={handleWithdraw}
+        onCancel={() => setShowConfirm(false)}
+      />
     </div>
   )
 }
