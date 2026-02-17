@@ -59,7 +59,7 @@ export async function GET() {
 
         return {
           ...attempt,
-          exam_name: attempt.exams?.name || '알 수 없음',
+          exam_name: (attempt.exams as any)?.name || '알 수 없음',
           subject_scores: subjectScores || [],
         }
       })
@@ -75,7 +75,7 @@ export async function GET() {
     // 4. 시험별 통계
     const examStats = (attempts || []).reduce((acc: any, attempt) => {
       const examId = attempt.exam_id
-      const examName = attempt.exams?.name || '알 수 없음'
+      const examName = (attempt.exams as any)?.name || '알 수 없음'
 
       if (!acc[examId]) {
         acc[examId] = {

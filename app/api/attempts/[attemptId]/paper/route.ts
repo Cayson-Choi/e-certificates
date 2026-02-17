@@ -95,7 +95,7 @@ export async function GET(
       choice_3: aq.questions.choice_3,
       choice_4: aq.questions.choice_4,
       image_url: aq.questions.image_url,
-      subject_name: aq.questions.subjects?.name,
+      subject_name: (aq.questions.subjects as any)?.name || '',
       selected: answersMap.get(aq.questions.id) || null, // 저장된 답안
     }))
 

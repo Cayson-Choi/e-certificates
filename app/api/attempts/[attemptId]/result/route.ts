@@ -128,7 +128,7 @@ export async function GET(
         correct_answer: q.questions.answer,
         explanation: q.questions.explanation,
         image_url: q.questions.image_url,
-        subject_name: q.questions.subjects?.name,
+        subject_name: (q.questions.subjects as any)?.name || '',
         student_answer: studentAnswer?.selected || null,
         is_correct: studentAnswer?.is_correct || false,
       }
@@ -137,7 +137,7 @@ export async function GET(
     return NextResponse.json({
       attempt_id: attempt.id,
       exam_id: attempt.exam_id,
-      exam_name: attempt.exams?.name,
+      exam_name: (attempt.exams as any)?.name || '',
       status: attempt.status,
       started_at: attempt.started_at,
       submitted_at: attempt.submitted_at,
