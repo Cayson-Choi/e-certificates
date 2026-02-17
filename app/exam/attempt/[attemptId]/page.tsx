@@ -112,6 +112,131 @@ const QuestionCard = memo(function QuestionCard({
   )
 })
 
+// --- QuitButton: isolated so opening the quit dialog doesn't re-render the question list ---
+function QuitButton() {
+  const router = useRouter()
+  const [showQuit, setShowQuit] = useState(false)
+
+  return (
+    <>
+      <button
+        onClick={() => setShowQuit(true)}
+        className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
+      >
+        중단하고 나가기
+      </button>
+      <ConfirmDialog
+        open={showQuit}
+        title="시험 중단"
+        message={"시험을 중단하시겠습니까?\n작성한 답안은 저장되지 않습니다."}
+        confirmText="중단하기"
+        confirmColor="red"
+        onConfirm={() => {
+          setShowQuit(false)
+          router.push('/')
+        }}
+        onCancel={() => setShowQuit(false)}
+      />
+    </>
+  )
+}
+
+// --- SubmitSection: isolated so opening submit dialogs doesn't re-render the question list ---
+function SubmitSection({
+  answeredCount,
+  totalCount,
+  attemptId,
+  onError,
+}: {
+  answeredCount: number
+  totalCount: number
+  attemptId: string
+  onError: (msg: string) => void
+}) {
+  const router = useRouter()
+  const [submitting, setSubmitting] = useState(false)
+  const [confirmType, setConfirmType] = useState<
+    null | 'submit-unanswered' | 'submit'
+  >(null)
+
+  const handleSubmitClick = () => {
+    if (answeredCount < totalCount) {
+      setConfirmType('submit-unanswered')
+    } else {
+      setConfirmType('submit')
+    }
+  }
+
+  const doSubmit = async () => {
+    setConfirmType(null)
+    setSubmitting(true)
+
+    // 브라우저에 paint 기회를 줘서 "제출 중..." 즉시 표시
+    await new Promise(resolve => setTimeout(resolve, 0))
+
+    try {
+      const res = await fetch(`/api/attempts/${attemptId}/submit`, {
+        method: 'POST',
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        onError(data.error || '제출에 실패했습니다')
+        setSubmitting(false)
+        return
+      }
+
+      router.push(`/exam/result/${attemptId}`)
+    } catch {
+      onError('오류가 발생했습니다')
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <>
+      <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border dark:border-gray-700">
+        <div className="flex justify-between items-center">
+          <div className="text-gray-600 dark:text-gray-400">
+            {answeredCount === totalCount
+              ? '모든 문제를 풀었습니다'
+              : `${totalCount - answeredCount}문제가 남았습니다`}
+          </div>
+          <button
+            onClick={handleSubmitClick}
+            disabled={submitting}
+            className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+          >
+            {submitting ? '제출 중...' : '시험 제출'}
+          </button>
+        </div>
+      </div>
+
+      {/* 미답 문제 제출 확인 */}
+      <ConfirmDialog
+        open={confirmType === 'submit-unanswered'}
+        title="미완료 문제 있음"
+        message={`${totalCount - answeredCount}문제를 풀지 않았습니다.\n정말 제출하시겠습니까?`}
+        confirmText="제출하기"
+        confirmColor="green"
+        onConfirm={() => setConfirmType('submit')}
+        onCancel={() => setConfirmType(null)}
+      />
+
+      {/* 최종 제출 확인 */}
+      <ConfirmDialog
+        open={confirmType === 'submit'}
+        title="시험 제출"
+        message={"시험을 제출하시겠습니까?\n제출 후에는 수정할 수 없습니다."}
+        confirmText="제출"
+        confirmColor="green"
+        onConfirm={doSubmit}
+        onCancel={() => setConfirmType(null)}
+      />
+    </>
+  )
+}
+
 // --- Main page component ---
 export default function ExamAttemptPage({
   params,
@@ -124,14 +249,8 @@ export default function ExamAttemptPage({
   const [paper, setPaper] = useState<any>(null)
   const [answers, setAnswers] = useState<Map<number, number>>(new Map())
   const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [timeExpired, setTimeExpired] = useState(false)
-
-  // 확인 대화상자 상태
-  const [confirmType, setConfirmType] = useState<
-    null | 'quit' | 'submit-unanswered' | 'submit'
-  >(null)
 
   useEffect(() => {
     loadPaper()
@@ -185,43 +304,9 @@ export default function ExamAttemptPage({
     setTimeExpired(true)
   }, [])
 
-  const handleSubmitClick = () => {
-    const answeredCount = answers.size
-    const totalCount = paper?.questions.length || 0
-
-    if (answeredCount < totalCount) {
-      setConfirmType('submit-unanswered')
-    } else {
-      setConfirmType('submit')
-    }
-  }
-
-  const doSubmit = async () => {
-    setConfirmType(null)
-    setSubmitting(true)
-
-    // 브라우저에 paint 기회를 줘서 "제출 중..." 즉시 표시
-    await new Promise(resolve => setTimeout(resolve, 0))
-
-    try {
-      const res = await fetch(`/api/attempts/${attemptId}/submit`, {
-        method: 'POST',
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        setError(data.error || '제출에 실패했습니다')
-        setSubmitting(false)
-        return
-      }
-
-      // 결과 페이지로 이동
-      router.push(`/exam/result/${attemptId}`)
-    } catch (err) {
-      setError('오류가 발생했습니다')
-      setSubmitting(false)
-    }
-  }
+  const handleError = useCallback((msg: string) => {
+    setError(msg)
+  }, [])
 
   if (loading) {
     return (
@@ -264,12 +349,7 @@ export default function ExamAttemptPage({
             </div>
             <div className="flex items-center gap-3">
               <ExamTimer expiresAt={paper.expires_at} onExpire={handleExpire} />
-              <button
-                onClick={() => setConfirmType('quit')}
-                className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
-              >
-                중단하고 나가기
-              </button>
+              <QuitButton />
             </div>
           </div>
         </div>
@@ -290,22 +370,12 @@ export default function ExamAttemptPage({
         </div>
 
         {/* 제출 버튼 */}
-        <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border dark:border-gray-700">
-          <div className="flex justify-between items-center">
-            <div className="text-gray-600 dark:text-gray-400">
-              {answeredCount === totalCount
-                ? '모든 문제를 풀었습니다'
-                : `${totalCount - answeredCount}문제가 남았습니다`}
-            </div>
-            <button
-              onClick={handleSubmitClick}
-              disabled={submitting}
-              className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-            >
-              {submitting ? '제출 중...' : '시험 제출'}
-            </button>
-          </div>
-        </div>
+        <SubmitSection
+          answeredCount={answeredCount}
+          totalCount={totalCount}
+          attemptId={attemptId}
+          onError={handleError}
+        />
       </div>
 
       {/* 시간 만료 안내 */}
@@ -317,42 +387,6 @@ export default function ExamAttemptPage({
         cancelText="확인"
         onConfirm={() => router.push('/')}
         onCancel={() => router.push('/')}
-      />
-
-      {/* 중단 확인 */}
-      <ConfirmDialog
-        open={confirmType === 'quit'}
-        title="시험 중단"
-        message={"시험을 중단하시겠습니까?\n작성한 답안은 저장되지 않습니다."}
-        confirmText="중단하기"
-        confirmColor="red"
-        onConfirm={() => {
-          setConfirmType(null)
-          router.push('/')
-        }}
-        onCancel={() => setConfirmType(null)}
-      />
-
-      {/* 미답 문제 제출 확인 */}
-      <ConfirmDialog
-        open={confirmType === 'submit-unanswered'}
-        title="미완료 문제 있음"
-        message={`${totalCount - answeredCount}문제를 풀지 않았습니다.\n정말 제출하시겠습니까?`}
-        confirmText="제출하기"
-        confirmColor="green"
-        onConfirm={() => setConfirmType('submit')}
-        onCancel={() => setConfirmType(null)}
-      />
-
-      {/* 최종 제출 확인 */}
-      <ConfirmDialog
-        open={confirmType === 'submit'}
-        title="시험 제출"
-        message={"시험을 제출하시겠습니까?\n제출 후에는 수정할 수 없습니다."}
-        confirmText="제출"
-        confirmColor="green"
-        onConfirm={doSubmit}
-        onCancel={() => setConfirmType(null)}
       />
     </div>
   )
