@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     }
 
     // 2. exam_id 검증
-    const { exam_id } = await request.json()
+    const { exam_id, abandon_existing } = await request.json()
 
     if (!exam_id) {
       return NextResponse.json({ error: 'exam_id가 필요합니다' }, { status: 400 })
@@ -46,27 +46,35 @@ export async function POST(request: Request) {
       const now = new Date()
       const expiresAt = new Date(existing.expires_at)
 
-      // 만료 전이면 이어풀기
       if (now < expiresAt) {
-        return NextResponse.json({
-          attempt_id: existing.id,
-          exam_id: existing.exam_id,
-          is_existing: true,
-          message: '이미 진행 중인 시험이 있습니다',
-        })
+        // abandon_existing 플래그가 있으면 기존 시험 중단
+        if (abandon_existing) {
+          await supabase
+            .from('attempts')
+            .update({ status: 'EXPIRED' })
+            .eq('id', existing.id)
+
+          await supabase.from('attempt_items').delete().eq('attempt_id', existing.id)
+          await supabase.from('subject_scores').delete().eq('attempt_id', existing.id)
+        } else {
+          // 만료 전이면 이어풀기
+          return NextResponse.json({
+            attempt_id: existing.id,
+            exam_id: existing.exam_id,
+            is_existing: true,
+            message: '이미 진행 중인 시험이 있습니다',
+          })
+        }
+      } else {
+        // 만료됨 - EXPIRED 처리 및 답안 삭제
+        await supabase
+          .from('attempts')
+          .update({ status: 'EXPIRED' })
+          .eq('id', existing.id)
+
+        await supabase.from('attempt_items').delete().eq('attempt_id', existing.id)
+        await supabase.from('subject_scores').delete().eq('attempt_id', existing.id)
       }
-
-      // 만료됨 - EXPIRED 처리 및 답안 삭제
-      await supabase
-        .from('attempts')
-        .update({ status: 'EXPIRED' })
-        .eq('id', existing.id)
-
-      // 답안 삭제
-      await supabase.from('attempt_items').delete().eq('attempt_id', existing.id)
-
-      // 과목 점수 삭제
-      await supabase.from('subject_scores').delete().eq('attempt_id', existing.id)
     }
 
     // 4. 23:00~23:59 KST 체크

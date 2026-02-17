@@ -163,31 +163,43 @@ export default function ExamAttemptPage({
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* 상단 고정 바 */}
-      <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-10 shadow-sm">
-        <div className="max-w-5xl mx-auto px-4 py-4">
+      <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 fixed top-0 left-0 right-0 z-50 shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-xl font-bold dark:text-white">{paper.exam_name}</h1>
-              <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <h1 className="text-lg font-bold dark:text-white">{paper.exam_name}</h1>
+              <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
                 답안: {answeredCount} / {totalCount}
               </div>
             </div>
-            <div className="text-right">
-              <div
-                className={`text-2xl font-bold ${
-                  timeLeft < 300 ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'
-                }`}
-              >
-                {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <div
+                  className={`text-2xl font-bold ${
+                    timeLeft < 300 ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'
+                  }`}
+                >
+                  {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">남은 시간</div>
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">남은 시간</div>
+              <button
+                onClick={() => {
+                  if (confirm('시험을 중단하시겠습니까?\n작성한 답안은 저장되지 않습니다.')) {
+                    router.push('/')
+                  }
+                }}
+                className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
+              >
+                중단하고 나가기
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       {/* 문제 */}
-      <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="max-w-5xl mx-auto px-4 py-8 pt-24">
         <div className="space-y-8">
           {paper.questions.map((question: any, index: number) => (
             <div
