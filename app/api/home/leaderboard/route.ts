@@ -4,11 +4,7 @@ import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
   try {
-    // 랭킹 조회는 관리자 권한으로 (RLS 우회)
-    const supabase = createAdminClient()
-
-    // 현재 로그인한 사용자 확인용 (일반 클라이언트)
-    const userSupabase = await createClient()
+    const supabase = await createClient()
     const { searchParams } = new URL(request.url)
     const examId = searchParams.get('exam_id')
 
@@ -19,7 +15,7 @@ export async function GET(request: Request) {
     // 현재 로그인한 사용자 확인
     const {
       data: { user },
-    } = await userSupabase.auth.getUser()
+    } = await supabase.auth.getUser()
 
     // 오늘 날짜 (KST)
     const now = new Date()
@@ -32,7 +28,7 @@ export async function GET(request: Request) {
       .toISOString()
       .split('T')[0]
 
-    // 1. 오늘 Top5 조회 (daily_best_scores) - JOIN 없이
+    // 1. 오늘 Top5 조회 (daily_best_scores - RLS: 누구나 조회 가능)
     const { data: todayTop5Raw, error: todayError } = await supabase
       .from('daily_best_scores')
       .select('user_id, best_score, best_submitted_at')
@@ -46,17 +42,21 @@ export async function GET(request: Request) {
       console.error('Today Top5 query error:', todayError)
     }
 
-    // 2. 프로필 정보 별도 조회
+    // 2. 프로필 정보 일괄 조회 (profiles RLS는 본인만 허용이므로 admin 클라이언트 필요)
     const todayTop5 = []
     if (todayTop5Raw && todayTop5Raw.length > 0) {
+      const userIds = todayTop5Raw.map((item) => item.user_id)
+      const adminSupabase = createAdminClient()
+      const { data: profiles } = await adminSupabase
+        .from('profiles')
+        .select('id, name, affiliation')
+        .in('id', userIds)
+
+      const profileMap = new Map(profiles?.map((p) => [p.id, p]) || [])
+
       for (let i = 0; i < todayTop5Raw.length; i++) {
         const item = todayTop5Raw[i]
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('name, affiliation')
-          .eq('id', item.user_id)
-          .single()
-
+        const profile = profileMap.get(item.user_id)
         todayTop5.push({
           rank: i + 1,
           user_id: item.user_id,
@@ -68,7 +68,7 @@ export async function GET(request: Request) {
       }
     }
 
-    // 3. 어제 Top5 조회 (daily_leaderboard_snapshots)
+    // 3. 어제 Top5 조회 (daily_leaderboard_snapshots - RLS: 누구나 조회 가능)
     const { data: yesterdayTop5Raw, error: yesterdayError } = await supabase
       .from('daily_leaderboard_snapshots')
       .select('rank, user_id, user_name_display, score, submitted_at')

@@ -44,14 +44,14 @@
 
 ```
 /app              - Next.js App Router
-  /api            - API Routes
-  /(auth)         - 인증 관련 페이지
-  /(main)         - 메인 페이지들
+  /api            - API Routes (21개 엔드포인트)
+  /(auth)         - 인증 관련 페이지 (로그인, 회원가입)
+  /admin          - 관리자 페이지 (문제관리, 회원관리)
+  /exam           - 시험 관련 페이지 (시작, 풀이, 결과)
+  /my             - 마이페이지 (기록, 프로필, 오답노트, 탈퇴)
 /components       - 재사용 컴포넌트
-/lib              - 유틸리티
-  /supabase       - Supabase 클라이언트
+/lib/supabase     - Supabase 클라이언트 (client, server, admin)
 /types            - TypeScript 타입 정의
-/hooks            - 커스텀 훅
 ```
 
 ## DB 테이블 요약

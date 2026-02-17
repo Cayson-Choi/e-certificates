@@ -2,6 +2,7 @@
 
 import { useEffect, useState, use } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import MathText from '@/components/MathText'
 
 export default function ExamAttemptPage({
@@ -205,11 +206,16 @@ export default function ExamAttemptPage({
                   />
 
                   {question.image_url && (
-                    <img
-                      src={question.image_url}
-                      alt="문제 이미지"
-                      className="mb-4 max-w-full h-auto rounded"
-                    />
+                    <div className="mb-4 relative w-full max-w-lg">
+                      <Image
+                        src={question.image_url}
+                        alt="문제 이미지"
+                        width={600}
+                        height={400}
+                        className="w-full h-auto rounded"
+                        loading="lazy"
+                      />
+                    </div>
                   )}
 
                   <div className="space-y-3">

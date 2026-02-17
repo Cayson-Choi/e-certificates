@@ -1,11 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, lazy, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import MathText from '@/components/MathText'
-import QuestionSplitEditor from '@/components/QuestionSplitEditor'
-import BulkUploadSplitEditor from '@/components/BulkUploadSplitEditor'
+
+const QuestionSplitEditor = lazy(() => import('@/components/QuestionSplitEditor'))
+const BulkUploadSplitEditor = lazy(() => import('@/components/BulkUploadSplitEditor'))
 
 export default function AdminQuestionsPage() {
   const router = useRouter()
@@ -412,10 +414,13 @@ export default function AdminQuestionsPage() {
                           />
                           {q.image_url && (
                             <div className="mb-3">
-                              <img
+                              <Image
                                 src={q.image_url}
                                 alt="문제 이미지"
+                                width={320}
+                                height={160}
                                 className="max-w-xs max-h-40 object-contain rounded border border-gray-300 dark:border-gray-600"
+                                loading="lazy"
                               />
                             </div>
                           )}
@@ -474,29 +479,33 @@ export default function AdminQuestionsPage() {
 
         {/* 문제 추가/수정 분할 편집기 */}
         {(showAddForm || editingQuestion) && (
-          <QuestionSplitEditor
-            question={editingQuestion}
-            onClose={() => {
-              setShowAddForm(false)
-              setEditingQuestion(null)
-            }}
-            onSuccess={() => {
-              setShowAddForm(false)
-              setEditingQuestion(null)
-              loadQuestions()
-            }}
-          />
+          <Suspense fallback={null}>
+            <QuestionSplitEditor
+              question={editingQuestion}
+              onClose={() => {
+                setShowAddForm(false)
+                setEditingQuestion(null)
+              }}
+              onSuccess={() => {
+                setShowAddForm(false)
+                setEditingQuestion(null)
+                loadQuestions()
+              }}
+            />
+          </Suspense>
         )}
 
         {/* 일괄 업로드 분할 편집기 */}
         {showBulkUpload && (
-          <BulkUploadSplitEditor
-            onClose={() => setShowBulkUpload(false)}
-            onSuccess={() => {
-              setShowBulkUpload(false)
-              loadQuestions()
-            }}
-          />
+          <Suspense fallback={null}>
+            <BulkUploadSplitEditor
+              onClose={() => setShowBulkUpload(false)}
+              onSuccess={() => {
+                setShowBulkUpload(false)
+                loadQuestions()
+              }}
+            />
+          </Suspense>
         )}
       </div>
     </div>
