@@ -64,6 +64,9 @@ export default function ExamStartPage({ params }: { params: Promise<{ examId: st
     setStarting(true)
     setError('')
 
+    // 브라우저에 paint 기회를 줘서 "시작 중..." 즉시 표시
+    await new Promise(resolve => setTimeout(resolve, 0))
+
     try {
       const res = await fetch('/api/attempts/start', {
         method: 'POST',

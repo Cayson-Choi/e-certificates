@@ -9,6 +9,10 @@ export default function LogoutButton() {
 
   const handleLogout = async () => {
     setLoggingOut(true)
+
+    // 브라우저에 paint 기회를 줘서 "로그아웃 중..." 즉시 표시
+    await new Promise(resolve => setTimeout(resolve, 0))
+
     await fetch('/api/auth/logout', { method: 'POST' })
     router.push('/')
     router.refresh()

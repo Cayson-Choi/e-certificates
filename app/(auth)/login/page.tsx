@@ -26,6 +26,9 @@ function LoginContent() {
     setLoading(true)
     setError('')
 
+    // 브라우저에 paint 기회를 줘서 "처리 중..." 즉시 표시
+    await new Promise(resolve => setTimeout(resolve, 0))
+
     const formData = new FormData(e.currentTarget)
     const email = formData.get('email') as string
     const password = formData.get('password') as string

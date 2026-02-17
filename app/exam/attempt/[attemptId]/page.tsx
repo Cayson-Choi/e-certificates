@@ -165,24 +165,20 @@ export default function ExamAttemptPage({
     }
   }
 
-  const handleAnswer = useCallback(async (questionId: number, choice: number) => {
-    // UI 업데이트
+  const handleAnswer = useCallback((questionId: number, choice: number) => {
+    // UI 즉시 업데이트
     setAnswers((prev) => {
       const next = new Map(prev)
       next.set(questionId, choice)
       return next
     })
 
-    // 서버에 저장
-    try {
-      await fetch(`/api/attempts/${attemptId}/answer`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question_id: questionId, selected: choice }),
-      })
-    } catch (err) {
-      console.error('답안 저장 실패:', err)
-    }
+    // 서버에 저장 (fire-and-forget: await 없이 백그라운드 저장)
+    fetch(`/api/attempts/${attemptId}/answer`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question_id: questionId, selected: choice }),
+    }).catch(err => console.error('답안 저장 실패:', err))
   }, [attemptId])
 
   const handleExpire = useCallback(() => {
@@ -203,6 +199,9 @@ export default function ExamAttemptPage({
   const doSubmit = async () => {
     setConfirmType(null)
     setSubmitting(true)
+
+    // 브라우저에 paint 기회를 줘서 "제출 중..." 즉시 표시
+    await new Promise(resolve => setTimeout(resolve, 0))
 
     try {
       const res = await fetch(`/api/attempts/${attemptId}/submit`, {
