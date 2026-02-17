@@ -8,6 +8,7 @@ export default function ProfilePage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [saveSuccess, setSaveSuccess] = useState(false)
   const [profile, setProfile] = useState<any>(null)
   const [formData, setFormData] = useState({
     affiliation: '',
@@ -49,6 +50,7 @@ export default function ProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
+    setSaveSuccess(false)
 
     try {
       // 1. 프로필 정보 수정
@@ -61,7 +63,6 @@ export default function ProfilePage() {
       if (!profileRes.ok) {
         const data = await profileRes.json()
         alert(data.error || '프로필 수정 실패')
-        setSaving(false)
         return
       }
 
@@ -77,7 +78,6 @@ export default function ProfilePage() {
 
         if (!passwordRes.ok) {
           alert(passwordResData.error || '비밀번호 변경 실패')
-          setSaving(false)
           return
         }
 
@@ -89,8 +89,9 @@ export default function ProfilePage() {
         })
       }
 
-      alert('저장되었습니다')
-      loadProfile()
+      // 성공 피드백 (UI 블로킹 없음)
+      setSaveSuccess(true)
+      setTimeout(() => setSaveSuccess(false), 2000)
     } catch (err) {
       console.error('Save error:', err)
       alert('오류가 발생했습니다')
@@ -232,9 +233,13 @@ export default function ProfilePage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400"
+                className={`flex-1 px-6 py-3 text-white rounded-lg ${
+                  saveSuccess
+                    ? 'bg-green-600 hover:bg-green-700'
+                    : 'bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400'
+                }`}
               >
-                {saving ? '저장 중...' : '저장'}
+                {saving ? '저장 중...' : saveSuccess ? '✓ 저장 완료' : '저장'}
               </button>
             </div>
           </form>
