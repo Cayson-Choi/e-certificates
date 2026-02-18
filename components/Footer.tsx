@@ -17,7 +17,7 @@ export default function Footer() {
             </div>
           </div>
           <div className="text-sm text-center md:text-right">
-            <p>&copy; {currentYear} 화성폴리텍대학 스마트 전기과. Powered by CAYSON TECH</p>
+            <p>&copy; {currentYear} CAYSON TECH. All rights reserved.</p>
           </div>
         </div>
       </div>
