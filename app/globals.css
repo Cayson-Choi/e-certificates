@@ -26,21 +26,6 @@ body {
   }
 }
 
-/* Hero/Ranking section (always dark) */
-.hero-ranking-gradient {
-  background: linear-gradient(135deg, #0f172a 0%, #1a1a2e 50%, #0f172a 100%);
-}
-
-.hero-glow {
-  position: absolute;
-  width: 400px;
-  height: 400px;
-  border-radius: 50%;
-  filter: blur(120px);
-  pointer-events: none;
-  will-change: transform;
-}
-
 /* Animations */
 @keyframes slideInFromRight {
   from { transform: translateX(100%); opacity: 0; }
@@ -91,24 +76,6 @@ body {
     0 0 6px rgba(0,0,0,0.9),
     0 1px 3px rgba(0,0,0,0.9),
     0 0 20px rgba(0,0,0,0.5);
-}
-
-/* Rainbow shimmer for title */
-@keyframes rainbowShimmer {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
-}
-
-.rainbow-shimmer {
-  background: linear-gradient(
-    90deg,
-    #60a5fa, #a78bfa, #f472b6, #fb923c, #facc15, #4ade80, #60a5fa
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: rainbowShimmer 4s linear infinite;
 }
 
 /* Pulse animation for "1등" */
@@ -237,7 +204,6 @@ body {
   .crown-bounce,
   .pulse-gold,
   .animate-slide-in-right,
-  .rainbow-shimmer,
   .rank-pulse,
   .butterfly-wrap,
   .butterfly-svg,

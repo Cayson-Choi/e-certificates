@@ -305,9 +305,6 @@ export default function BulkUploadSplitEditor({
           }
           delete processedQuestions[i].img_data
         }
-        if (uploaded > 0) {
-          console.log(`${uploaded}/${imgUploadTargets.length} images uploaded`)
-        }
       }
 
       const res = await fetch('/api/admin/questions/bulk', {
