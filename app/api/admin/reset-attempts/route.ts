@@ -68,6 +68,10 @@ export async function POST(request: NextRequest) {
       attemptQuery = attemptQuery.eq('exam_id', exam_id!)
     } else {
       attemptQuery = attemptQuery.eq('user_id', user_id!)
+      // user scope에서 특정 시험만 삭제
+      if (exam_id) {
+        attemptQuery = attemptQuery.eq('exam_id', exam_id)
+      }
     }
 
     const { data: attempts, error: attemptError } = await attemptQuery
@@ -90,10 +94,12 @@ export async function POST(request: NextRequest) {
     // FK 순서대로 삭제
     // 1. daily_leaderboard_snapshots (user_id + exam_id 기반)
     if (scope === 'user') {
-      await adminSupabase
+      let snapshotQuery = adminSupabase
         .from('daily_leaderboard_snapshots')
         .delete()
         .eq('user_id', user_id!)
+      if (exam_id) snapshotQuery = snapshotQuery.eq('exam_id', exam_id)
+      await snapshotQuery
     } else if (scope === 'exam') {
       await adminSupabase
         .from('daily_leaderboard_snapshots')
@@ -103,10 +109,12 @@ export async function POST(request: NextRequest) {
 
     // 2. daily_best_scores (user_id + exam_id 기반)
     if (scope === 'user') {
-      await adminSupabase
+      let bestQuery = adminSupabase
         .from('daily_best_scores')
         .delete()
         .eq('user_id', user_id!)
+      if (exam_id) bestQuery = bestQuery.eq('exam_id', exam_id)
+      await bestQuery
     } else if (scope === 'exam') {
       await adminSupabase
         .from('daily_best_scores')
@@ -138,7 +146,7 @@ export async function POST(request: NextRequest) {
       .delete()
       .in('id', attemptIds)
 
-    const label = scope === 'exam' ? '시험별' : '사용자별'
+    const label = scope === 'exam' ? '시험별' : (exam_id ? '사용자+시험별' : '사용자별')
 
     return NextResponse.json({
       message: `${label} 응시 기록이 초기화되었습니다 (${attemptIds.length}건)`,
