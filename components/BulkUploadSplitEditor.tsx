@@ -117,14 +117,40 @@ export default function BulkUploadSplitEditor({
     }
   }
 
+  // LaTeX 백슬래시(\frac, \tau 등)를 JSON 이스케이프(\\frac, \\tau)로 자동 변환
+  const fixLatexBackslashes = (text: string): string => {
+    // 1) 이미 정상인 JSON 이스케이프를 임시 치환하여 보호
+    let fixed = text.replace(/\\\\/g, '\x00DBL\x00')
+    fixed = fixed.replace(/\\"/g, '\x00QUOTE\x00')
+    fixed = fixed.replace(/\\n/g, '\x00NL\x00')
+    fixed = fixed.replace(/\\\//g, '\x00SLASH\x00')
+    fixed = fixed.replace(/\\(u[0-9a-fA-F]{4})/g, '\x00U$1\x00')
+    // 2) 남은 백슬래시는 LaTeX이므로 이중 이스케이프
+    fixed = fixed.replace(/\\/g, '\\\\')
+    // 3) 보호했던 시퀀스 복원
+    fixed = fixed.replace(/\x00DBL\x00/g, '\\\\')
+    fixed = fixed.replace(/\x00QUOTE\x00/g, '\\"')
+    fixed = fixed.replace(/\x00NL\x00/g, '\\n')
+    fixed = fixed.replace(/\x00SLASH\x00/g, '\\/')
+    fixed = fixed.replace(/\x00U([0-9a-fA-F]{4})\x00/g, '\\u$1')
+    return fixed
+  }
+
   const parseQuestions = (text: string, type: 'json' | 'csv'): any[] | null => {
     if (type === 'json') {
       try {
         const parsed = JSON.parse(text)
         return Array.isArray(parsed) ? parsed : [parsed]
       } catch {
-        alert('잘못된 JSON 형식입니다')
-        return null
+        // LaTeX 백슬래시 자동 수정 후 재시도
+        try {
+          const fixed = fixLatexBackslashes(text)
+          const parsed = JSON.parse(fixed)
+          return Array.isArray(parsed) ? parsed : [parsed]
+        } catch {
+          alert('잘못된 JSON 형식입니다')
+          return null
+        }
       }
     } else {
       const lines = text.trim().split('\n')
