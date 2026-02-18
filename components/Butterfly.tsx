@@ -45,7 +45,7 @@ export default function Butterfly() {
     if (speakingRef.current || typeof window === 'undefined' || !window.speechSynthesis) return
     speakingRef.current = true
     const name = userNameRef.current
-    const text = name ? `안녕 ${name}님!` : '로그인해주세요'
+    const text = name ? `안녕하세요 ${name}님!` : '로그인해주세요'
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.lang = 'ko-KR'
     utterance.rate = 1
