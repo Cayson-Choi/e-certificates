@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import Leaderboard from '@/components/Leaderboard'
+import Butterfly from '@/components/Butterfly'
 
 export const revalidate = 60
 
@@ -248,6 +249,7 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      <Butterfly />
     </div>
   )
 }
