@@ -117,6 +117,15 @@ export default function BulkUploadSplitEditor({
     }
   }
 
+  // AI 생성 인용 마커([cite_start], [cite: ...]) 제거
+  const stripCitationMarkers = (text: string): string => {
+    // JSON 구조를 깨뜨리는 [cite_start] 제거
+    let cleaned = text.replace(/\[cite_start\]/g, '')
+    // 문자열 내부의 [cite: 숫자, ...] 제거
+    cleaned = cleaned.replace(/\s*\[cite:\s*[\d,\s]+\]/g, '')
+    return cleaned
+  }
+
   // LaTeX 백슬래시(\frac, \tau 등)를 JSON 이스케이프(\\frac, \\tau)로 자동 변환
   const fixLatexBackslashes = (text: string): string => {
     // 1) 이미 정상인 JSON 이스케이프를 임시 치환하여 보호
@@ -138,13 +147,15 @@ export default function BulkUploadSplitEditor({
 
   const parseQuestions = (text: string, type: 'json' | 'csv'): any[] | null => {
     if (type === 'json') {
+      // 인용 마커 제거 후 파싱 시도
+      const cleaned = stripCitationMarkers(text)
       try {
-        const parsed = JSON.parse(text)
+        const parsed = JSON.parse(cleaned)
         return Array.isArray(parsed) ? parsed : [parsed]
       } catch {
         // LaTeX 백슬래시 자동 수정 후 재시도
         try {
-          const fixed = fixLatexBackslashes(text)
+          const fixed = fixLatexBackslashes(cleaned)
           const parsed = JSON.parse(fixed)
           return Array.isArray(parsed) ? parsed : [parsed]
         } catch {
