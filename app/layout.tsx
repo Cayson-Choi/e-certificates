@@ -5,8 +5,14 @@ import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
-  title: "스마트 전기과 CBT - 화성폴리텍대학",
-  description: "화성폴리텍대학 스마트 전기과 자격시험 CBT 학습 시스템",
+  title: "스마트 전기과 - 화성폴리텍대학",
+  description: "모의고사를 풀고, 즉시 채점하고, 랭킹으로 경쟁하세요.",
+  openGraph: {
+    title: "스마트 전기과 - 화성폴리텍대학",
+    description: "모의고사를 풀고, 즉시 채점하고, 랭킹으로 경쟁하세요.",
+    siteName: "화성폴리텍대학 스마트 전기과",
+    images: [{ url: "/hero-bg.png" }],
+  },
 };
 
 export default function RootLayout({
