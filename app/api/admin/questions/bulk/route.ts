@@ -126,17 +126,40 @@ export async function POST(request: Request) {
           }
         }
 
-        // 4. 중복 확인
-        const { data: existing } = await supabase
+        // 4. 중복 확인 (문제 코드)
+        const { data: existingCode } = await supabase
           .from('questions')
           .select('id')
           .eq('question_code', questionCode)
           .single()
 
-        if (existing) {
+        if (existingCode) {
           errors.push({
             index: i + 1,
             error: `중복된 문제 코드: "${questionCode}"`,
+          })
+          continue
+        }
+
+        // 4-1. 내용 중복 확인 (시험+과목+문제텍스트+선택지+정답 모두 동일)
+        const { data: existingContent } = await supabase
+          .from('questions')
+          .select('id, question_code')
+          .eq('exam_id', examId)
+          .eq('subject_id', subjectId)
+          .eq('question_text', q.question_text)
+          .eq('choice_1', q.choice_1)
+          .eq('choice_2', q.choice_2)
+          .eq('choice_3', q.choice_3)
+          .eq('choice_4', q.choice_4)
+          .eq('answer', q.answer)
+          .limit(1)
+          .single()
+
+        if (existingContent) {
+          errors.push({
+            index: i + 1,
+            error: `동일한 문제가 이미 존재합니다 (코드: ${existingContent.question_code})`,
           })
           continue
         }

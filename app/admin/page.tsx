@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import ResetAttemptsSection from '@/components/ResetAttemptsSection'
+import DuplicateQuestionsSection from '@/components/DuplicateQuestionsSection'
 
 export default async function AdminPage() {
   const supabase = await createClient()
@@ -87,6 +88,9 @@ export default async function AdminPage() {
             ))}
           </div>
         </div>
+
+        {/* 중복 문제 관리 */}
+        <DuplicateQuestionsSection />
 
         {/* 응시 기록 초기화 */}
         <ResetAttemptsSection exams={exams || []} />
