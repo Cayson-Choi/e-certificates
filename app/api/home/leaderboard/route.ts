@@ -183,8 +183,6 @@ export async function GET(request: Request) {
       my_score: myScore,
     })
 
-    // ★ 30초 캐시 (브라우저 + CDN)
-    response.headers.set('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60')
     return response
   } catch (error) {
     console.error('Leaderboard error:', error)
