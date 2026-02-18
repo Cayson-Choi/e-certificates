@@ -46,22 +46,26 @@ export default async function Home() {
 
   return (
     <div>
-      {/* Hero + Ranking (always dark) */}
-      <section className="hero-ranking-gradient relative overflow-hidden">
-        <div className="hero-glow bg-yellow-500 opacity-[0.15] top-20 left-1/4" />
-        <div className="hero-glow bg-blue-500 opacity-[0.15] bottom-20 right-1/4" />
-        <div className="hero-glow bg-purple-500 opacity-[0.1] top-1/2 left-1/2 -translate-x-1/2" />
+      {/* Hero + Ranking */}
+      <section className="relative overflow-hidden">
+        {/* Background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/hero-bg.png')" }}
+        />
+        {/* Light overlay */}
+        <div className="absolute inset-0" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 lg:pt-14 pb-16 lg:pb-20">
           {/* Compact hero text */}
           <div className="text-center mb-10">
-            <h1 className="text-3xl lg:text-4xl font-extrabold text-white mb-3 leading-tight tracking-tight">
+            <h1 className="text-3xl lg:text-4xl font-extrabold text-white mb-3 leading-tight tracking-tight hero-text-stroke">
               화성폴리텍대학{' '}
-              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                스마트 전기과 CBT
+              <span className="text-sky-300 font-black">
+                스마트 전기과
               </span>
             </h1>
-            <p className="text-base text-gray-400 leading-relaxed">
+            <p className="text-base text-white leading-relaxed hero-subtext-stroke">
               모의고사를 풀고, 즉시 채점하고, 랭킹으로 경쟁하세요.
             </p>
           </div>

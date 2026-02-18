@@ -58,7 +58,7 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
       return 'bg-gradient-to-br from-gray-300 to-gray-400 text-gray-700 shadow-md'
     if (rank === 3)
       return 'bg-gradient-to-br from-orange-300 to-orange-400 text-orange-800 shadow-md'
-    return 'bg-white/10 text-gray-400'
+    return 'bg-gray-700/90 text-gray-400'
   }
 
   const getStatusBadge = (
@@ -123,7 +123,7 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
     <>
       {/* Ranking header */}
       <div className="text-center mb-6">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded-full mb-4">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gray-900/90 border border-yellow-500/30 rounded-full mb-4 shadow-lg">
           <svg
             className="w-4 h-4 text-yellow-400"
             fill="currentColor"
@@ -136,10 +136,10 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
           </span>
           <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
         </div>
-        <h2 className="text-2xl lg:text-3xl font-extrabold text-white mb-2">
-          오늘의 <span className="text-yellow-400">1등</span>은 누구?
+        <h2 className="text-3xl lg:text-4xl font-extrabold text-white mb-2 hero-text-stroke">
+          오늘의 <span className="text-yellow-400 rank-pulse mr-1" style={{ fontFamily: "'Nanum Brush Script', cursive", fontSize: '1.4em' }}>1등</span>은 누구?
         </h2>
-        <p className="text-gray-400">지금 도전해서 이름을 올리세요</p>
+        <p className="text-white hero-subtext-stroke">지금 도전해서 이름을 올리세요</p>
       </div>
 
       {/* Tabs */}
@@ -150,8 +150,8 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
             onClick={() => setActiveExamId(exam.id)}
             className={`px-5 py-2.5 rounded-xl border text-sm font-medium transition-all ${
               activeExamId === exam.id
-                ? 'bg-white/15 text-white border-white/20'
-                : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border-white/10'
+                ? 'bg-gray-900 text-white border-gray-600 shadow-lg'
+                : 'bg-gray-900/90 text-gray-400 hover:text-white hover:bg-gray-800 border-gray-700 shadow-lg'
             }`}
           >
             {exam.name}
@@ -176,7 +176,7 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
             {first ? (
               <>
                 {/* 1st place highlight */}
-                <div className="bg-gradient-to-r from-yellow-500/20 via-amber-500/10 to-yellow-500/20 border border-yellow-500/30 rounded-2xl p-5 mb-3 gold-glow relative">
+                <div className="bg-gradient-to-r from-yellow-900 via-gray-900 to-yellow-900 border border-yellow-500/40 rounded-2xl p-5 mb-3 gold-glow relative shadow-xl">
                   <div className="absolute -top-3 left-5">
                     <span className="crown-bounce inline-block text-2xl">
                       &#x1F451;
@@ -217,10 +217,10 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
                   {rest.map((user) => (
                     <div
                       key={user.rank}
-                      className={`backdrop-blur-sm border rounded-xl p-3.5 flex items-center justify-between hover:bg-white/[0.1] transition-colors ${
+                      className={`border rounded-xl p-3.5 flex items-center justify-between hover:bg-gray-800 transition-colors shadow-lg ${
                         user.rank <= 3
-                          ? 'bg-white/[0.07] border-white/10'
-                          : 'bg-white/[0.05] border-white/[0.07]'
+                          ? 'bg-gray-900 border-gray-600'
+                          : 'bg-gray-900/95 border-gray-700'
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -262,7 +262,7 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
                 </div>
               </>
             ) : (
-              <div className="bg-white/[0.05] border border-white/10 rounded-2xl p-12 text-center">
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl p-12 text-center shadow-xl">
                 <svg
                   className="w-12 h-12 mx-auto mb-3 text-gray-600"
                   fill="none"
@@ -288,7 +288,7 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
           <div className="lg:col-span-2 space-y-4">
             {/* My rank card */}
             {data.my_rank != null && data.my_score != null ? (
-              <div className="bg-gradient-to-br from-blue-600/20 to-blue-800/20 border border-blue-500/30 rounded-2xl p-5">
+              <div className="bg-gradient-to-br from-blue-900 to-gray-900 border border-blue-500/40 rounded-2xl p-5 shadow-xl">
                 <div className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-3">
                   내 순위
                 </div>
@@ -341,7 +341,7 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
                 </a>
               </div>
             ) : (
-              <div className="bg-gradient-to-br from-blue-600/20 to-blue-800/20 border border-blue-500/30 rounded-2xl p-5">
+              <div className="bg-gradient-to-br from-blue-900 to-gray-900 border border-blue-500/40 rounded-2xl p-5 shadow-xl">
                 <div className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-3">
                   내 순위
                 </div>
@@ -371,7 +371,7 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
             )}
 
             {/* Yesterday Top 5 */}
-            <div className="bg-white/[0.05] border border-white/10 rounded-2xl p-5">
+            <div className="bg-gray-900 border border-gray-700 rounded-2xl p-5 shadow-xl">
               <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
                 어제 Top 5
               </div>

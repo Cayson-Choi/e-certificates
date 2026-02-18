@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Butterfly from "@/components/Butterfly";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
@@ -31,12 +32,17 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css"
           crossOrigin="anonymous"
         />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&display=swap"
+        />
       </head>
       <body className="antialiased flex flex-col min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
+          <Butterfly />
         </ThemeProvider>
       </body>
     </html>
