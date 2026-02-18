@@ -12,6 +12,7 @@ export default function OfficialExamsPage() {
   const [showForm, setShowForm] = useState(false)
   const [error, setError] = useState('')
   const [deletingId, setDeletingId] = useState<number | null>(null)
+  const [togglingId, setTogglingId] = useState<number | null>(null)
 
   // 생성 폼 상태
   const [formData, setFormData] = useState({
@@ -68,6 +69,38 @@ export default function OfficialExamsPage() {
       setError('오류가 발생했습니다')
     } finally {
       setCreating(false)
+    }
+  }
+
+  const handleTogglePublish = async (e: React.MouseEvent, examId: number, currentPublished: boolean) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    const action = currentPublished ? '게시 종료' : '게시'
+    if (!confirm(`이 시험을 ${action}하시겠습니까?`)) return
+
+    setTogglingId(examId)
+    try {
+      const res = await fetch('/api/admin/official-exams', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ exam_id: examId, is_published: !currentPublished }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        alert(data.error || `${action} 실패`)
+        return
+      }
+
+      setExams((prev) =>
+        prev.map((ex) => (ex.id === examId ? { ...ex, is_published: !currentPublished } : ex))
+      )
+    } catch {
+      alert('오류가 발생했습니다')
+    } finally {
+      setTogglingId(null)
     }
   }
 
@@ -234,6 +267,15 @@ export default function OfficialExamsPage() {
                     <span className="text-xs bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 px-2 py-0.5 rounded-full font-semibold">
                       공식
                     </span>
+                    {exam.is_published ? (
+                      <span className="text-xs bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-full font-semibold">
+                        게시 중
+                      </span>
+                    ) : (
+                      <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-2 py-0.5 rounded-full font-semibold">
+                        비게시
+                      </span>
+                    )}
                   </div>
                   <div className="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
                     <span>시간: {exam.duration_minutes}분</span>
@@ -243,6 +285,17 @@ export default function OfficialExamsPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={(e) => handleTogglePublish(e, exam.id, exam.is_published)}
+                    disabled={togglingId === exam.id}
+                    className={`px-3 py-1.5 text-xs rounded font-medium disabled:opacity-50 ${
+                      exam.is_published
+                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        : 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/50'
+                    }`}
+                  >
+                    {togglingId === exam.id ? '처리 중...' : exam.is_published ? '게시 종료' : '게시'}
+                  </button>
                   <button
                     onClick={(e) => handleDelete(e, exam.id, exam.name)}
                     disabled={deletingId === exam.id}

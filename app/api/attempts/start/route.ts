@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     // exam 존재 확인 (exam_mode, password, duration_minutes 포함)
     const { data: exam, error: examError } = await supabase
       .from('exams')
-      .select('id, name, exam_mode, password, duration_minutes')
+      .select('id, name, exam_mode, password, duration_minutes, is_published')
       .eq('id', exam_id)
       .single()
 
@@ -34,8 +34,11 @@ export async function POST(request: Request) {
 
     const isOfficial = exam.exam_mode === 'OFFICIAL'
 
-    // OFFICIAL 모드: 비밀번호 검증
+    // OFFICIAL 모드: 게시 상태 및 비밀번호 검증
     if (isOfficial) {
+      if (!exam.is_published) {
+        return NextResponse.json({ error: '현재 응시할 수 없는 시험입니다' }, { status: 403 })
+      }
       if (!password || password !== exam.password) {
         return NextResponse.json({ error: '비밀번호가 일치하지 않습니다' }, { status: 403 })
       }

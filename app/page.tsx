@@ -41,9 +41,10 @@ const floatClasses = [
 
 export default async function Home() {
   const supabase = getStaticSupabase()
-  const { data: exams } = await supabase.from('exams').select('id, name, exam_mode, duration_minutes, created_at, creator_name, creator_title').order('id')
+  const { data: exams } = await supabase.from('exams').select('id, name, exam_mode, duration_minutes, created_at, creator_name, creator_title, is_published').order('id')
 
   const practiceExams = exams?.filter(e => e.exam_mode !== 'OFFICIAL') || []
+  const visibleExams = exams?.filter(e => e.exam_mode !== 'OFFICIAL' || e.is_published) || []
 
   return (
     <div>
@@ -83,12 +84,12 @@ export default async function Home() {
       >
         <div
           className={`grid gap-4 max-w-5xl mx-auto ${
-            (exams?.length || 0) <= 3
+            (visibleExams?.length || 0) <= 3
               ? 'md:grid-cols-3'
               : 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
           }`}
         >
-          {exams?.map((exam, index) => (
+          {visibleExams?.map((exam, index) => (
             <Link
               key={exam.id}
               href={`/exam/${exam.id}`}

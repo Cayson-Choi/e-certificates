@@ -33,7 +33,7 @@ export async function GET() {
       .from('exams')
       .select(`
         id, name, exam_mode, password, duration_minutes, created_at,
-        creator_name, creator_title,
+        creator_name, creator_title, is_published,
         subjects (id, name, order_no)
       `)
       .eq('exam_mode', 'OFFICIAL')
@@ -156,7 +156,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: '관리자 권한이 필요합니다' }, { status: 403 })
     }
 
-    const { exam_id, name, password, duration_minutes } = await request.json()
+    const { exam_id, name, password, duration_minutes, is_published } = await request.json()
 
     if (!exam_id) {
       return NextResponse.json({ error: 'exam_id가 필요합니다' }, { status: 400 })
@@ -168,6 +168,7 @@ export async function PUT(request: Request) {
     if (name !== undefined) updateData.name = name
     if (password !== undefined) updateData.password = password
     if (duration_minutes !== undefined) updateData.duration_minutes = duration_minutes
+    if (is_published !== undefined) updateData.is_published = is_published
 
     const { error } = await adminClient
       .from('exams')
