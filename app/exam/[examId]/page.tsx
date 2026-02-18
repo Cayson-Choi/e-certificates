@@ -22,6 +22,7 @@ export default function ExamStartPage({ params }: { params: Promise<{ examId: st
   const [needStudentId, setNeedStudentId] = useState(false)
   const [savingStudentId, setSavingStudentId] = useState(false)
   const [officialQuestionCount, setOfficialQuestionCount] = useState<number | null>(null)
+  const [officialBySubject, setOfficialBySubject] = useState<Record<number, number>>({})
 
   useEffect(() => {
     params.then(({ examId }) => {
@@ -81,6 +82,7 @@ export default function ExamStartPage({ params }: { params: Promise<{ examId: st
           if (qRes.ok) {
             const qData = await qRes.json()
             setOfficialQuestionCount(qData.count)
+            setOfficialBySubject(qData.bySubject || {})
           }
         } catch {}
       }
@@ -242,7 +244,9 @@ export default function ExamStartPage({ params }: { params: Promise<{ examId: st
                     <span className="text-gray-700 dark:text-gray-300">
                       {index + 1}. {subject.name}
                     </span>
-                    <span className="text-gray-600 dark:text-gray-400">{subject.questions_per_attempt}문항</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      {isOfficial ? (officialBySubject[subject.id] ?? subject.questions_per_attempt) : subject.questions_per_attempt}문항
+                    </span>
                   </div>
                 ))}
               </div>
