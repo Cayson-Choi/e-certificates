@@ -137,7 +137,7 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
           <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
         </div>
         <h2 className="text-3xl lg:text-4xl font-extrabold text-white mb-2 hero-text-stroke">
-          오늘의 <span className="text-yellow-400 rank-pulse mr-1" style={{ fontFamily: "'Nanum Brush Script', cursive", fontSize: '1.4em' }}>1등</span>은 누구?
+          오늘의 <span className="text-yellow-400 rank-pulse mx-2" style={{ fontFamily: "'Nanum Brush Script', cursive", fontSize: '1.8em' }}>1등</span>은 누구?
         </h2>
         <p className="text-white hero-subtext-stroke">지금 도전해서 이름을 올리세요</p>
       </div>
