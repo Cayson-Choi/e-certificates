@@ -241,40 +241,21 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
                   {rest.length > 0 && (() => {
                     const user = rest[restIndex % rest.length]
                     return (
-                      <div key={user.rank} className="px-3 pb-1.5 pt-1 lg:px-4 lg:pb-3 lg:pt-2 animate-fade-in">
-                        <div className="rounded-xl p-1.5 lg:p-2.5 flex items-center justify-between">
+                      <div key={user.rank} className="px-3 pb-1.5 pt-1 lg:px-4 lg:pb-3 lg:pt-2 board-flip-wrap">
+                        <div className="board-flip rounded-xl p-1.5 lg:p-2.5 flex items-center justify-between">
                           <div className="flex items-center gap-2.5 lg:gap-3">
-                            <div
-                              className={`w-8 h-8 lg:w-10 lg:h-10 rounded-lg lg:rounded-xl flex items-center justify-center ${getRankBadge(user.rank)}`}
-                            >
-                              <span className="text-xs lg:text-sm font-black">
-                                {user.rank}
-                              </span>
+                            <div className={`w-8 h-8 lg:w-10 lg:h-10 rounded-lg lg:rounded-xl flex items-center justify-center ${getRankBadge(user.rank)}`}>
+                              <span className="text-xs lg:text-sm font-black">{user.rank}</span>
                             </div>
                             <div>
-                              <div
-                                className={`text-base font-bold ${user.rank <= 3 ? 'text-white' : 'text-gray-300'}`}
-                              >
-                                {user.name}
-                              </div>
-                              <div
-                                className={`text-xs ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}
-                              >
-                                {user.affiliation}
-                              </div>
+                              <div className={`text-base font-bold ${user.rank <= 3 ? 'text-white' : 'text-gray-300'}`}>{user.name}</div>
+                              <div className={`text-xs ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}>{user.affiliation}</div>
                             </div>
                           </div>
                           <div className="flex items-center gap-2 lg:gap-3">
                             {getStatusBadge(user.status, user.rank_change)}
-                            <span
-                              className={`text-lg lg:text-xl font-bold ${user.rank <= 3 ? 'text-white' : 'text-gray-300'}`}
-                            >
-                              {user.score}
-                              <span
-                                className={`text-xs lg:text-sm ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}
-                              >
-                                점
-                              </span>
+                            <span className={`text-lg lg:text-xl font-bold ${user.rank <= 3 ? 'text-white' : 'text-gray-300'}`}>
+                              {user.score}<span className={`text-xs lg:text-sm ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}>점</span>
                             </span>
                           </div>
                         </div>
@@ -400,44 +381,16 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
               {yesterday.length > 0 ? (() => {
                 const user = yesterday[yesterdayIndex % yesterday.length]
                 return (
-                  <div key={user.rank} className="flex items-center justify-between animate-fade-in">
+                  <div key={user.rank} className="board-flip-wrap">
+                    <div className="board-flip flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div
-                        className={`w-6 h-6 rounded-md flex items-center justify-center ${
-                          user.rank === 1
-                            ? 'bg-amber-400/20'
-                            : user.rank === 2
-                              ? 'bg-slate-300/20'
-                              : user.rank === 3
-                                ? 'bg-amber-700/20'
-                                : 'bg-white/5'
-                        }`}
-                      >
-                        <span
-                          className={`text-xs font-bold ${
-                            user.rank === 1
-                              ? 'text-amber-400'
-                              : user.rank === 2
-                                ? 'text-slate-300'
-                                : user.rank === 3
-                                  ? 'text-amber-600'
-                                  : 'text-gray-500'
-                          }`}
-                        >
-                          {user.rank}
-                        </span>
+                      <div className={`w-6 h-6 rounded-md flex items-center justify-center ${user.rank === 1 ? 'bg-amber-400/20' : user.rank === 2 ? 'bg-slate-300/20' : user.rank === 3 ? 'bg-amber-700/20' : 'bg-white/5'}`}>
+                        <span className={`text-xs font-bold ${user.rank === 1 ? 'text-amber-400' : user.rank === 2 ? 'text-slate-300' : user.rank === 3 ? 'text-amber-600' : 'text-gray-500'}`}>{user.rank}</span>
                       </div>
-                      <span
-                        className={`text-sm ${user.rank <= 3 ? 'text-gray-300' : 'text-gray-400'}`}
-                      >
-                        {user.name}
-                      </span>
+                      <span className={`text-sm ${user.rank <= 3 ? 'text-gray-300' : 'text-gray-400'}`}>{user.name}</span>
                     </div>
-                    <span
-                      className={`text-sm font-semibold ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}
-                    >
-                      {user.score}점
-                    </span>
+                    <span className={`text-sm font-semibold ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}>{user.score}점</span>
+                    </div>
                   </div>
                 )
               })() : (
