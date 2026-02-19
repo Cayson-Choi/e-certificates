@@ -71,35 +71,27 @@ export default function MyPage() {
         </div>
 
         {/* 전체 통계 */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border dark:border-gray-700">
-            <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">총 응시</div>
-            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-              {data.stats.total_attempts}회
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6 border dark:border-gray-700">
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800">
+              <span className="text-sm text-gray-600 dark:text-gray-400">총 응시</span>
+              <span className="text-sm font-bold text-blue-700 dark:text-blue-300">{data.stats.total_attempts}회</span>
             </div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border dark:border-gray-700">
-            <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">평균 점수</div>
-            <div className="text-3xl font-bold text-green-600 dark:text-green-400">
-              {data.stats.avg_score}점
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-800">
+              <span className="text-sm text-gray-600 dark:text-gray-400">평균</span>
+              <span className="text-sm font-bold text-green-700 dark:text-green-300">{data.stats.avg_score}점</span>
             </div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border dark:border-gray-700">
-            <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">최고 점수</div>
-            <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
-              {data.stats.max_score}점
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-200 dark:border-purple-800">
+              <span className="text-sm text-gray-600 dark:text-gray-400">최고</span>
+              <span className="text-sm font-bold text-purple-700 dark:text-purple-300">{data.stats.max_score}점</span>
             </div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border dark:border-gray-700">
-            <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">합격 횟수</div>
-            <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">
-              {data.stats.pass_count}회
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-200 dark:border-orange-800">
+              <span className="text-sm text-gray-600 dark:text-gray-400">합격</span>
+              <span className="text-sm font-bold text-orange-700 dark:text-orange-300">{data.stats.pass_count}회</span>
             </div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border dark:border-gray-700">
-            <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">합격률</div>
-            <div className="text-3xl font-bold text-red-600 dark:text-red-400">
-              {data.stats.pass_rate}%
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-200 dark:border-red-800">
+              <span className="text-sm text-gray-600 dark:text-gray-400">합격률</span>
+              <span className="text-sm font-bold text-red-700 dark:text-red-300">{data.stats.pass_rate}%</span>
             </div>
           </div>
         </div>
@@ -250,24 +242,24 @@ export default function MyPage() {
         </div>
 
         {/* 하단 버튼 */}
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex gap-2">
           <Link
             href="/"
-            className="flex-1 px-6 py-3 bg-gray-600 dark:bg-gray-700 text-white text-center rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600"
+            className="flex-1 px-3 py-2.5 bg-gray-600 dark:bg-gray-700 text-white text-center rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 text-sm"
           >
             홈으로
           </Link>
           <Link
             href="/my/profile"
-            className="flex-1 px-6 py-3 bg-blue-600 dark:bg-blue-500 text-white text-center rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600"
+            className="flex-1 px-3 py-2.5 bg-blue-600 dark:bg-blue-500 text-white text-center rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 text-sm"
           >
-            👤 프로필 수정
+            프로필 수정
           </Link>
           <Link
             href="/my/wrong-answers"
-            className="flex-1 px-6 py-3 bg-red-600 dark:bg-red-500 text-white text-center rounded-lg hover:bg-red-700 dark:hover:bg-red-600"
+            className="flex-1 px-3 py-2.5 bg-red-600 dark:bg-red-500 text-white text-center rounded-lg hover:bg-red-700 dark:hover:bg-red-600 text-sm"
           >
-            ❌ 오답노트
+            오답노트
           </Link>
         </div>
       </div>
