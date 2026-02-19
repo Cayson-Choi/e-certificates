@@ -60,11 +60,11 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
 
   const getRankBadge = (rank: number) => {
     if (rank === 1)
-      return 'bg-gradient-to-br from-yellow-400 to-amber-500 text-yellow-900 shadow-md'
+      return 'bg-gradient-to-br from-yellow-300 via-amber-400 to-amber-600 text-yellow-950 shadow-md shadow-amber-500/30'
     if (rank === 2)
-      return 'bg-gradient-to-br from-gray-300 to-gray-400 text-gray-700 shadow-md'
+      return 'bg-gradient-to-br from-slate-100 via-slate-300 to-slate-400 text-slate-700 shadow-md shadow-slate-300/30'
     if (rank === 3)
-      return 'bg-gradient-to-br from-orange-300 to-orange-400 text-orange-800 shadow-md'
+      return 'bg-gradient-to-br from-amber-600 via-amber-700 to-orange-800 text-amber-100 shadow-md shadow-amber-700/30'
     return 'bg-gray-700/90 text-gray-400'
   }
 
@@ -213,7 +213,7 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 lg:gap-4">
-                        <div className="w-11 h-11 lg:w-14 lg:h-14 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg pulse-gold">
+                        <div className="w-11 h-11 lg:w-14 lg:h-14 bg-gradient-to-br from-yellow-300 via-amber-400 to-amber-600 rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/40 pulse-gold">
                           <span className="text-yellow-900 text-lg lg:text-xl font-black">
                             1
                           </span>
@@ -405,22 +405,22 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
                       <div
                         className={`w-6 h-6 rounded-md flex items-center justify-center ${
                           user.rank === 1
-                            ? 'bg-yellow-500/20'
+                            ? 'bg-amber-400/20'
                             : user.rank === 2
-                              ? 'bg-gray-500/20'
+                              ? 'bg-slate-300/20'
                               : user.rank === 3
-                                ? 'bg-orange-500/20'
+                                ? 'bg-amber-700/20'
                                 : 'bg-white/5'
                         }`}
                       >
                         <span
                           className={`text-xs font-bold ${
                             user.rank === 1
-                              ? 'text-yellow-400'
+                              ? 'text-amber-400'
                               : user.rank === 2
-                                ? 'text-gray-400'
+                                ? 'text-slate-300'
                                 : user.rank === 3
-                                  ? 'text-orange-400'
+                                  ? 'text-amber-600'
                                   : 'text-gray-500'
                           }`}
                         >
