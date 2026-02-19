@@ -126,31 +126,30 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
   const first = data?.today_top5?.[0]
   const rest = data?.today_top5?.slice(1) || []
 
+  const [restIndex, setRestIndex] = useState(0)
+  const [yesterdayIndex, setYesterdayIndex] = useState(0)
+  const yesterday = data?.yesterday_top5 || []
+
+  useEffect(() => {
+    if (rest.length <= 1) return
+    const timer = setInterval(() => {
+      setRestIndex((prev) => (prev + 1) % rest.length)
+    }, 3000)
+    return () => clearInterval(timer)
+  }, [rest.length])
+
+  useEffect(() => {
+    if (yesterday.length <= 1) return
+    const timer = setInterval(() => {
+      setYesterdayIndex((prev) => (prev + 1) % yesterday.length)
+    }, 3000)
+    return () => clearInterval(timer)
+  }, [yesterday.length])
+
   return (
     <>
-      {/* Ranking header */}
-      <div className="text-center mb-6">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gray-900/90 border border-yellow-500/30 rounded-full mb-4 shadow-lg">
-          <svg
-            className="w-4 h-4 text-yellow-400"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-          </svg>
-          <span className="text-yellow-300 text-sm font-semibold">
-            LIVE RANKING
-          </span>
-          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-        </div>
-        <h2 className="text-3xl lg:text-4xl font-extrabold text-white mb-2 hero-text-stroke">
-          오늘의 <span className="text-yellow-400 rank-pulse mx-2" style={{ fontFamily: "'Nanum Brush Script', cursive", fontSize: '1.8em' }}>1등</span>은 누구?
-        </h2>
-        <p className="text-white hero-subtext-stroke">지금 도전해서 이름을 올리세요</p>
-      </div>
-
       {/* Tabs */}
-      <div className="flex justify-center gap-2 mb-7">
+      <div className="flex justify-center gap-2 mb-8">
         {exams.map((exam) => (
           <button
             key={exam.id}
@@ -166,6 +165,28 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
         ))}
       </div>
 
+      {/* Ranking header */}
+      <div className="text-center mb-6">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gray-900/90 border border-yellow-500/30 rounded-full mb-4 shadow-lg">
+          <svg
+            className="w-4 h-4 text-yellow-400"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+          </svg>
+          <span className="text-yellow-300 text-sm font-semibold">
+            실시간 순위
+          </span>
+          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+        </div>
+        <h2 className="text-3xl lg:text-4xl font-extrabold text-white mb-2 hero-text-stroke">
+          오늘의 <span className="text-yellow-400 rank-pulse mx-2" style={{ fontFamily: "'Nanum Brush Script', cursive", fontSize: '1.8em' }}>1등</span>은 누구?
+        </h2>
+        <p className="text-white hero-subtext-stroke">지금 도전해서 이름을 올리세요</p>
+      </div>
+
+      <div className="mb-44" />
       {/* Content */}
       {loading ? (
         <div className="text-center text-gray-400 py-16">
@@ -216,14 +237,12 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
                     </div>
                   </div>
 
-                  {/* 2nd~5th */}
-                  {rest.length > 0 && (
-                    <div className="px-3 pb-3 pt-2 lg:px-4 lg:pb-4 lg:pt-3 space-y-1.5 lg:space-y-2">
-                      {rest.map((user) => (
-                        <div
-                          key={user.rank}
-                          className="rounded-xl p-2.5 lg:p-3.5 flex items-center justify-between hover:bg-gray-800 transition-colors"
-                        >
+                  {/* 2nd~5th rotating */}
+                  {rest.length > 0 && (() => {
+                    const user = rest[restIndex % rest.length]
+                    return (
+                      <div key={user.rank} className="px-3 pb-3 pt-2 lg:px-4 lg:pb-4 lg:pt-3 animate-fade-in">
+                        <div className="rounded-xl p-2.5 lg:p-3.5 flex items-center justify-between">
                           <div className="flex items-center gap-2.5 lg:gap-3">
                             <div
                               className={`w-8 h-8 lg:w-10 lg:h-10 rounded-lg lg:rounded-xl flex items-center justify-center ${getRankBadge(user.rank)}`}
@@ -259,9 +278,9 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
                             </span>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
+                      </div>
+                    )
+                  })()}
                 </>
               ) : (
                 <div className="p-12 text-center">
@@ -378,54 +397,50 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
               <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
                 어제 Top 5
               </div>
-              {data.yesterday_top5.length > 0 ? (
-                <div className="space-y-2.5">
-                  {data.yesterday_top5.map((user) => (
-                    <div
-                      key={user.rank}
-                      className="flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <div
-                          className={`w-6 h-6 rounded-md flex items-center justify-center ${
+              {yesterday.length > 0 ? (() => {
+                const user = yesterday[yesterdayIndex % yesterday.length]
+                return (
+                  <div key={user.rank} className="flex items-center justify-between animate-fade-in">
+                    <div className="flex items-center gap-2.5">
+                      <div
+                        className={`w-6 h-6 rounded-md flex items-center justify-center ${
+                          user.rank === 1
+                            ? 'bg-yellow-500/20'
+                            : user.rank === 2
+                              ? 'bg-gray-500/20'
+                              : user.rank === 3
+                                ? 'bg-orange-500/20'
+                                : 'bg-white/5'
+                        }`}
+                      >
+                        <span
+                          className={`text-xs font-bold ${
                             user.rank === 1
-                              ? 'bg-yellow-500/20'
+                              ? 'text-yellow-400'
                               : user.rank === 2
-                                ? 'bg-gray-500/20'
+                                ? 'text-gray-400'
                                 : user.rank === 3
-                                  ? 'bg-orange-500/20'
-                                  : 'bg-white/5'
+                                  ? 'text-orange-400'
+                                  : 'text-gray-500'
                           }`}
                         >
-                          <span
-                            className={`text-xs font-bold ${
-                              user.rank === 1
-                                ? 'text-yellow-400'
-                                : user.rank === 2
-                                  ? 'text-gray-400'
-                                  : user.rank === 3
-                                    ? 'text-orange-400'
-                                    : 'text-gray-500'
-                            }`}
-                          >
-                            {user.rank}
-                          </span>
-                        </div>
-                        <span
-                          className={`text-sm ${user.rank <= 3 ? 'text-gray-300' : 'text-gray-400'}`}
-                        >
-                          {user.name}
+                          {user.rank}
                         </span>
                       </div>
                       <span
-                        className={`text-sm font-semibold ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}
+                        className={`text-sm ${user.rank <= 3 ? 'text-gray-300' : 'text-gray-400'}`}
                       >
-                        {user.score}점
+                        {user.name}
                       </span>
                     </div>
-                  ))}
-                </div>
-              ) : (
+                    <span
+                      className={`text-sm font-semibold ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}
+                    >
+                      {user.score}점
+                    </span>
+                  </div>
+                )
+              })() : (
                 <p className="text-gray-500 text-sm text-center py-4">
                   기록이 없습니다
                 </p>
