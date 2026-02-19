@@ -39,8 +39,8 @@ export default async function Home() {
               화성폴리텍대학
               <br className="lg:hidden" />
               {' '}
-              <span className="text-sky-300 font-black">
-                스마트 전기과
+              <span className="font-black">
+                <span className="text-sky-300 sparkle-text" style={{ fontFamily: "'Nanum Pen Script', cursive", fontSize: '1.9em', verticalAlign: '-0.15em' }}>스마트</span> <span className="text-sky-300">전기과</span>
               </span>
             </h1>
             <p className="text-base text-white leading-relaxed hero-subtext-stroke">
