@@ -67,8 +67,8 @@ export default function ExamCards({ initialExams }: { initialExams: Exam[] }) {
     <div
       className={`grid gap-4 max-w-5xl mx-auto ${
         exams.length <= 3
-          ? 'md:grid-cols-3'
-          : 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+          ? 'grid-cols-2 md:grid-cols-3'
+          : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
       }`}
     >
       {exams.map((exam, index) => (

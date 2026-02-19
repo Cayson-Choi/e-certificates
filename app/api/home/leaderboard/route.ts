@@ -36,14 +36,14 @@ export async function GET(request: Request) {
         .eq('exam_id', examId)
         .order('best_score', { ascending: false })
         .order('best_submitted_at', { ascending: true })
-        .limit(5),
+        .limit(3),
       supabase
         .from('daily_leaderboard_snapshots')
         .select('rank, user_id, user_name_display, score, submitted_at')
         .eq('kst_date', yesterdayKst)
         .eq('exam_id', examId)
         .order('rank')
-        .limit(5),
+        .limit(3),
     ])
 
     const todayTop5Raw = todayResult.data
@@ -71,7 +71,7 @@ export async function GET(request: Request) {
           .eq('exam_id', examId)
           .order('best_score', { ascending: false })
           .order('best_submitted_at', { ascending: true })
-          .limit(5)
+          .limit(3)
       )
     }
 

@@ -118,7 +118,7 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
       )
     }
     if (status === '=') {
-      return <span className="text-gray-500 text-sm">-</span>
+      return null
     }
     return null
   }
@@ -126,17 +126,17 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
   const first = data?.today_top5?.[0]
   const rest = data?.today_top5?.slice(1) || []
 
-  const [restIndex, setRestIndex] = useState(0)
   const [yesterdayIndex, setYesterdayIndex] = useState(0)
+  const [typeIndex, setTypeIndex] = useState(0)
   const yesterday = data?.yesterday_top5 || []
-
-  useEffect(() => {
-    if (rest.length <= 1) return
-    const timer = setInterval(() => {
-      setRestIndex((prev) => (prev + 1) % rest.length)
-    }, 3000)
-    return () => clearInterval(timer)
-  }, [rest.length])
+  const congratsA = '입상을'
+  const congratsB = '축하합니다~'
+  const congratsHeart = '\u2764'
+  const fullText = congratsA + congratsB + congratsHeart
+  const typingLen = fullText.length
+  const holdTicks = 8
+  const blankTicks = 4
+  const totalCycle = typingLen + 1 + holdTicks + blankTicks
 
   useEffect(() => {
     if (yesterday.length <= 1) return
@@ -145,6 +145,13 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
     }, 3000)
     return () => clearInterval(timer)
   }, [yesterday.length])
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTypeIndex((prev) => (prev + 1) % totalCycle)
+    }, 200)
+    return () => clearInterval(timer)
+  }, [totalCycle])
 
   return (
     <>
@@ -198,70 +205,67 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
           <p>데이터를 불러올 수 없습니다</p>
         </div>
       ) : (
-        <div className="grid lg:grid-cols-5 gap-5 max-w-6xl mx-auto items-start">
-          {/* Left: Today Top 5 (3 cols) */}
-          <div className="lg:col-span-3">
-            <div className="bg-gray-900 border border-gray-700 rounded-2xl shadow-xl">
+        <div className="grid lg:grid-cols-5 gap-3 max-w-[44rem] mx-auto items-stretch">
+          {/* Left: Today Top 3 */}
+          <div className="lg:col-span-3 h-full">
+            <div className="bg-gradient-to-b from-yellow-900/80 via-gray-900 to-gray-900 border border-gray-700 rounded-2xl shadow-xl gold-glow h-full">
               {first ? (
                 <>
                   {/* 1st place highlight */}
-                  <div className="bg-gradient-to-r from-yellow-900 via-gray-900 to-yellow-900 rounded-t-2xl p-3 lg:p-5 gold-glow relative">
-                    <div className="absolute -top-6 -left-3 lg:-top-8 lg:-left-4">
-                      <span className="crown-bounce inline-block text-4xl lg:text-6xl">
+                  <div className="pt-5 px-2.5 pb-2.5 lg:pt-6 lg:px-3 lg:pb-3 relative">
+                    <div className="absolute -top-4 -left-3 lg:-top-5 lg:-left-4">
+                      <span className="crown-bounce inline-block text-4xl lg:text-5xl">
                         &#x1F451;
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 lg:gap-4">
-                        <div className="w-11 h-11 lg:w-14 lg:h-14 bg-gradient-to-br from-yellow-300 via-amber-400 to-amber-600 rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/40 pulse-gold">
-                          <span className="text-yellow-900 text-lg lg:text-xl font-black">
+                      <div className="flex items-center gap-2.5 lg:gap-3">
+                        <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-yellow-300 via-amber-400 to-amber-600 rounded-xl lg:rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/40 pulse-gold">
+                          <span className="text-yellow-900 text-base lg:text-lg font-black">
                             1
                           </span>
                         </div>
                         <div>
-                          <div className="text-lg lg:text-xl font-bold text-white">
+                          <div className="text-base lg:text-lg font-bold text-white">
                             {first.name}
                           </div>
-                          <div className="text-xs lg:text-sm text-yellow-300/70">
+                          <div className="text-[11px] lg:text-xs text-yellow-300/70">
                             {first.affiliation}
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 lg:gap-3">
+                      <div className="flex items-center gap-2">
                         {getStatusBadge(first.status, first.rank_change)}
-                        <div className="text-2xl lg:text-3xl font-black text-yellow-400">
+                        <div className="text-xl lg:text-2xl font-black text-amber-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
                           {first.score}
-                          <span className="text-sm lg:text-lg text-yellow-400/70">점</span>
+                          <span className="text-xs lg:text-sm text-amber-300/70">점</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* 2nd~5th rotating */}
-                  {rest.length > 0 && (() => {
-                    const user = rest[restIndex % rest.length]
-                    return (
-                      <div key={user.rank} className="px-3 pb-1.5 pt-1 lg:px-4 lg:pb-3 lg:pt-2 board-flip-wrap">
-                        <div className="board-flip rounded-xl p-1.5 lg:p-2.5 flex items-center justify-between">
-                          <div className="flex items-center gap-2.5 lg:gap-3">
-                            <div className={`w-8 h-8 lg:w-10 lg:h-10 rounded-lg lg:rounded-xl flex items-center justify-center ${getRankBadge(user.rank)}`}>
-                              <span className="text-xs lg:text-sm font-black">{user.rank}</span>
-                            </div>
-                            <div>
-                              <div className={`text-base font-bold ${user.rank <= 3 ? 'text-white' : 'text-gray-300'}`}>{user.name}</div>
-                              <div className={`text-xs ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}>{user.affiliation}</div>
-                            </div>
+                  {/* 2nd~3rd fixed */}
+                  {rest.map((user) => (
+                    <div key={user.rank} className="px-2.5 pb-1 pt-0.5 lg:px-3 lg:pb-1.5 lg:pt-0.5 last:pb-2.5 last:lg:pb-3">
+                      <div className="rounded-lg p-1.5 flex items-center justify-between">
+                        <div className="flex items-center gap-2 lg:gap-2.5">
+                          <div className={`w-7 h-7 lg:w-8 lg:h-8 rounded-lg flex items-center justify-center ${getRankBadge(user.rank)}`}>
+                            <span className="text-xs font-black">{user.rank}</span>
                           </div>
-                          <div className="flex items-center gap-2 lg:gap-3">
-                            {getStatusBadge(user.status, user.rank_change)}
-                            <span className={`text-lg lg:text-xl font-bold ${user.rank <= 3 ? 'text-white' : 'text-gray-300'}`}>
-                              {user.score}<span className={`text-xs lg:text-sm ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}>점</span>
-                            </span>
+                          <div>
+                            <div className={`text-sm lg:text-base font-bold ${user.rank <= 3 ? 'text-white' : 'text-gray-300'}`}>{user.name}</div>
+                            <div className={`text-[11px] ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}>{user.affiliation}</div>
                           </div>
                         </div>
+                        <div className="flex items-center gap-2">
+                          {getStatusBadge(user.status, user.rank_change)}
+                          <span className={`text-base lg:text-lg font-bold ${user.rank <= 3 ? 'text-white' : 'text-gray-300'}`}>
+                            {user.score}<span className={`text-[11px] lg:text-xs ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}>점</span>
+                          </span>
+                        </div>
                       </div>
-                    )
-                  })()}
+                    </div>
+                  ))}
                 </>
               ) : (
                 <div className="p-5 text-center">
@@ -287,12 +291,12 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
             </div>
           </div>
 
-          {/* Right: My rank + Yesterday Top 5 (2 cols) */}
-          <div className="lg:col-span-2 space-y-4">
+          {/* Right: My rank + Yesterday Top 3 */}
+          <div className="lg:col-span-2 flex flex-row gap-3 lg:grid lg:grid-rows-2 lg:gap-2.5">
             {/* My rank card */}
             {data.my_rank != null && data.my_score != null ? (
-              <div className="bg-gradient-to-br from-blue-900 to-gray-900 border border-blue-500/40 rounded-2xl p-3 lg:p-4 shadow-xl">
-                <div className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-2">
+              <div className="flex-1 min-w-0 bg-gradient-to-br from-blue-900 to-gray-900 border border-blue-500/40 rounded-2xl p-2.5 lg:p-3 shadow-xl">
+                <div className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-1">
                   내 순위
                 </div>
                 <div className="flex items-center justify-between">
@@ -344,8 +348,8 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
                 </a>
               </div>
             ) : (
-              <div className="bg-gradient-to-br from-blue-900 to-gray-900 border border-blue-500/40 rounded-2xl p-3 lg:p-4 shadow-xl">
-                <div className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-2">
+              <div className="flex-1 min-w-0 bg-gradient-to-br from-blue-900 to-gray-900 border border-blue-500/40 rounded-2xl p-2.5 lg:p-3 shadow-xl">
+                <div className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-1">
                   내 순위
                 </div>
                 <p className="text-gray-400 text-xs mb-2">
@@ -373,27 +377,52 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
               </div>
             )}
 
-            {/* Yesterday Top 5 */}
-            <div className="bg-gray-900 border border-gray-700 rounded-2xl p-2.5 lg:p-3 shadow-xl">
-              <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
-                어제 Top 5
+            {/* Yesterday Top 3 */}
+            <div className="flex-1 min-w-0 bg-gray-900 border border-gray-700 rounded-2xl p-2.5 lg:p-3 shadow-xl flex flex-col justify-center">
+              <div className="text-xs lg:text-sm font-semibold text-gray-400 uppercase tracking-wider mb-1 lg:mb-1.5">
+                어제 Top 3
               </div>
-              {yesterday.length > 0 ? (() => {
-                const user = yesterday[yesterdayIndex % yesterday.length]
-                return (
-                  <div key={user.rank} className="board-flip-wrap">
-                    <div className="board-flip flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <div className={`w-6 h-6 rounded-md flex items-center justify-center ${user.rank === 1 ? 'bg-amber-400/20' : user.rank === 2 ? 'bg-slate-300/20' : user.rank === 3 ? 'bg-amber-700/20' : 'bg-white/5'}`}>
-                        <span className={`text-xs font-bold ${user.rank === 1 ? 'text-amber-400' : user.rank === 2 ? 'text-slate-300' : user.rank === 3 ? 'text-amber-600' : 'text-gray-500'}`}>{user.rank}</span>
+              {yesterday.length > 0 ? (
+                <>
+                  {(() => {
+                    const user = yesterday[yesterdayIndex % yesterday.length]
+                    return (
+                      <div key={user.rank} className="board-flip-wrap">
+                        <div className="board-flip flex items-center justify-between">
+                        <div className="flex items-center gap-2 lg:gap-2.5">
+                          <div className={`w-6 h-6 lg:w-7 lg:h-7 rounded-md flex items-center justify-center ${getRankBadge(user.rank)}`}>
+                            <span className="text-[11px] lg:text-xs font-bold">{user.rank}</span>
+                          </div>
+                          <span className="text-xs lg:text-sm text-white font-medium">{user.name}</span>
+                        </div>
+                        <span className="text-xs lg:text-sm font-semibold text-gray-200">{user.score}점</span>
+                        </div>
                       </div>
-                      <span className={`text-sm ${user.rank <= 3 ? 'text-gray-300' : 'text-gray-400'}`}>{user.name}</span>
-                    </div>
-                    <span className={`text-sm font-semibold ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}>{user.score}점</span>
-                    </div>
-                  </div>
-                )
-              })() : (
+                    )
+                  })()}
+                  <p className="text-[11px] lg:text-sm font-semibold mt-2 lg:mt-3 h-4 lg:h-5">
+                    {(() => {
+                      const shown = typeIndex <= typingLen
+                        ? fullText.slice(0, typeIndex)
+                        : typeIndex < typingLen + 1 + holdTicks
+                          ? fullText
+                          : ''
+                      if (!shown) return '\u00A0'
+                      const aLen = congratsA.length
+                      const bLen = congratsB.length
+                      const partA = shown.slice(0, Math.min(shown.length, aLen))
+                      const partB = shown.length > aLen ? shown.slice(aLen, aLen + bLen) : ''
+                      const heart = shown.length > aLen + bLen ? shown.slice(aLen + bLen) : ''
+                      return (
+                        <>
+                          <span className="text-yellow-400/80">{partA}{partB ? ' ' + partB : ''}</span>
+                          {heart && <span className="text-red-500">{heart}</span>}
+                        </>
+                      )
+                    })()}
+                  </p>
+                </>
+              ) : (
                 <p className="text-gray-500 text-sm text-center py-4">
                   기록이 없습니다
                 </p>

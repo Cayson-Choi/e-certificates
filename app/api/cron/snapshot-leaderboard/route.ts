@@ -30,7 +30,7 @@ export async function GET(request: Request) {
         .eq('exam_id', examId)
         .order('best_score', { ascending: false })
         .order('best_submitted_at', { ascending: true })
-        .limit(5)
+        .limit(3)
 
       if (selectError) {
         console.error(`Top5 query error for exam ${examId}:`, selectError)
