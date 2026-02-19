@@ -44,13 +44,23 @@ export async function POST(
 
     const adminClient = createAdminClient()
 
+    // attempt_id 파라미터가 있으면 1명만 처리
+    const url = new URL(request.url)
+    const singleAttemptId = url.searchParams.get('attempt_id')
+
     // PENDING_MANUAL 상태의 attempts 조회
-    const { data: attempts, error: attemptsError } = await adminClient
+    let query = adminClient
       .from('attempts')
       .select('id, user_id, total_questions')
       .eq('exam_id', examId)
       .eq('status', 'SUBMITTED')
       .eq('grading_status', 'PENDING_MANUAL')
+
+    if (singleAttemptId) {
+      query = query.eq('id', singleAttemptId)
+    }
+
+    const { data: attempts, error: attemptsError } = await query
 
     if (attemptsError) {
       console.error('[AI-GRADE] Attempts fetch error:', attemptsError)

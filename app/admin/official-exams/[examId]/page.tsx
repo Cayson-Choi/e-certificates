@@ -202,6 +202,7 @@ export default function OfficialExamDetailPage({
   // AI 채점 상태
   const [gradingMode, setGradingMode] = useState<'manual' | 'ai'>('manual')
   const [aiGrading, setAiGrading] = useState(false)
+  const [aiProgress, setAiProgress] = useState<{ current: number; total: number; currentName: string } | null>(null)
   const [aiResult, setAiResult] = useState<{ totalGraded: number; studentsGraded: number; totalFailed: number } | null>(null)
 
   // 시험 설정 수정 상태
@@ -366,37 +367,50 @@ export default function OfficialExamDetailPage({
   }
 
   const handleAiGrade = async () => {
-    const pendingCount = results.filter((r) => r.grading_status === 'PENDING_MANUAL').length
-    if (pendingCount === 0) {
+    const pendingResults = results.filter((r) => r.grading_status === 'PENDING_MANUAL')
+    if (pendingResults.length === 0) {
       alert('채점 대기 중인 시험이 없습니다')
       return
     }
-    if (!confirm(`AI 자동 채점을 시작하시겠습니까?\n대상: ${pendingCount}건\n\n* AI 채점은 참고용이며, 이후 수동으로 수정할 수 있습니다.`)) {
+    if (!confirm(`AI 자동 채점을 시작하시겠습니까?\n대상: ${pendingResults.length}명\n\n* AI 채점은 참고용이며, 이후 수동으로 수정할 수 있습니다.`)) {
       return
     }
 
     setAiGrading(true)
     setAiResult(null)
-    try {
-      const res = await fetch(`/api/admin/official-exams/${examId}/ai-grade`, {
-        method: 'POST',
-      })
-      const data = await res.json()
-      if (res.ok && data.success) {
-        setAiResult({
-          totalGraded: data.totalGraded,
-          studentsGraded: data.studentsGraded,
-          totalFailed: data.totalFailed,
+    setAiProgress(null)
+
+    let totalGraded = 0
+    let totalFailed = 0
+    let studentsGraded = 0
+
+    for (let i = 0; i < pendingResults.length; i++) {
+      const r = pendingResults[i]
+      setAiProgress({ current: i + 1, total: pendingResults.length, currentName: r.name || '' })
+
+      try {
+        const res = await fetch(`/api/admin/official-exams/${examId}/ai-grade?attempt_id=${r.attempt_id}`, {
+          method: 'POST',
         })
-        loadResults()
-      } else {
-        alert(data.error || 'AI 채점 중 오류가 발생했습니다')
+        const data = await res.json()
+        if (res.ok && data.success) {
+          totalGraded += data.totalGraded
+          totalFailed += data.totalFailed
+          studentsGraded += data.studentsGraded
+        } else {
+          totalFailed++
+          console.error(`AI grade failed for attempt ${r.attempt_id}:`, data.error)
+        }
+      } catch {
+        totalFailed++
+        console.error(`AI grade error for attempt ${r.attempt_id}`)
       }
-    } catch {
-      alert('AI 채점 요청 중 오류가 발생했습니다')
-    } finally {
-      setAiGrading(false)
     }
+
+    setAiResult({ totalGraded, studentsGraded, totalFailed })
+    setAiProgress(null)
+    setAiGrading(false)
+    loadResults()
   }
 
   const handleEditorClose = () => {
@@ -747,9 +761,9 @@ export default function OfficialExamDetailPage({
                       </button>
                     )
                   })()}
-                  {aiGrading && (
+                  {aiGrading && aiProgress && (
                     <span className="text-sm text-gray-500 dark:text-gray-400 animate-pulse">
-                      AI 채점 진행 중... 잠시 기다려주세요
+                      채점 중... {aiProgress.current}/{aiProgress.total}명 ({aiProgress.currentName})
                     </span>
                   )}
                   {aiResult && !aiGrading && (
