@@ -2,6 +2,7 @@ const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions'
 
 interface GradeResult {
   score: number
+  feedback: string
 }
 
 export async function gradeSubjectiveAnswer(params: {
@@ -40,7 +41,8 @@ ${referenceSection}[학생 답안] ${studentAnswer}
 
 ${referenceInstruction}학생 답안이 정확하면 만점, 틀리면 0점을 부여하세요.
 반드시 아래 형식으로만 답하세요:
-점수: {숫자}`
+점수: {숫자}
+이유: {한두 문장으로 채점 이유}`
   } else {
     prompt = `당신은 전기 분야 전문가이자 자격시험 채점관입니다.
 
@@ -52,7 +54,8 @@ ${referenceSection}[학생 답안] ${studentAnswer}
 ${referenceInstruction}학생 답안의 정확성과 핵심 내용 포함 여부에 따라 부분 점수를 부여하세요.
 반드시 0~${points} 사이의 정수로 점수를 부여하세요.
 반드시 아래 형식으로만 답하세요:
-점수: {숫자}`
+점수: {숫자}
+이유: {한두 문장으로 채점 이유}`
   }
 
   try {
@@ -110,8 +113,12 @@ ${referenceInstruction}학생 답안의 정확성과 핵심 내용 포함 여부
     const score = parseInt(match[1], 10)
     const clampedScore = Math.max(0, Math.min(score, points))
 
-    console.log(`[OpenRouter] Parsed score: ${clampedScore}/${points}`)
-    return { score: clampedScore }
+    // "이유: ..." 패턴 추출
+    const feedbackMatch = textToSearch.match(/이유\s*[:：]\s*(.+)/)
+    const feedback = feedbackMatch ? feedbackMatch[1].trim() : ''
+
+    console.log(`[OpenRouter] Parsed score: ${clampedScore}/${points}, feedback: ${feedback.substring(0, 100)}`)
+    return { score: clampedScore, feedback }
   } catch (error: any) {
     if (error?.name === 'AbortError') {
       console.error('[OpenRouter] Request timed out (60s)')

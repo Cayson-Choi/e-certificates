@@ -154,13 +154,18 @@ export async function POST(
         })
 
         if (result !== null) {
+          const updateData: any = {
+            awarded_points: result.score,
+            is_correct: result.score > 0,
+            grading_status: 'GRADED',
+          }
+          if (result.feedback) {
+            updateData.ai_feedback = result.feedback
+          }
+
           const { error: updateErr } = await adminClient
             .from('attempt_items')
-            .update({
-              awarded_points: result.score,
-              is_correct: result.score > 0,
-              grading_status: 'GRADED',
-            })
+            .update(updateData)
             .eq('attempt_id', attempt.id)
             .eq('question_id', item.question_id)
 
