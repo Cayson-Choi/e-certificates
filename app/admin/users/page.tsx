@@ -349,71 +349,71 @@ export default function AdminUsersPage() {
                 <table className="w-full">
                   <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 whitespace-nowrap">
                         이름
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 whitespace-nowrap">
                         소속
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 whitespace-nowrap">
                         이메일
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 whitespace-nowrap">
                         전화번호
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                        응시 횟수
+                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300">
+                        <div>응시</div><div>횟수</div>
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                        관리자
+                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 whitespace-nowrap">
+                        구분
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 whitespace-nowrap">
                         가입일
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                        권한 관리
+                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300">
+                        <div>권한</div><div>관리</div>
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                        계정 관리
+                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300">
+                        <div>계정</div><div>관리</div>
                       </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
                     {paginatedUsers.map((user) => (
                       <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
+                        <td className="px-4 py-4 text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap">
                           {user.name}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                        <td className="px-4 py-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
                           {user.affiliation}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
+                        <td className="px-4 py-4 text-sm text-gray-900 dark:text-gray-100">
                           {user.email}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                        <td className="px-4 py-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
                           {user.phone || '-'}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                        <td className="px-4 py-4 text-sm text-gray-600 dark:text-gray-400 text-center">
                           {user.attempt_count}회
                         </td>
-                        <td className="px-6 py-4 text-sm">
+                        <td className="px-4 py-4 text-sm text-center">
                           {user.is_admin ? (
-                            <span className="bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200 px-2 py-1 rounded text-xs font-medium">
+                            <span className="inline-block w-14 text-center bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200 px-2 py-1 rounded text-xs font-medium">
                               관리자
                             </span>
                           ) : (
-                            <span className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded text-xs font-medium">
+                            <span className="inline-block w-14 text-center bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded text-xs font-medium">
                               일반
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                        <td className="px-4 py-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
                           {new Date(user.created_at).toLocaleDateString('ko-KR')}
                         </td>
-                        <td className="px-6 py-4 text-sm">
+                        <td className="px-4 py-4 text-sm text-center">
                           <button
                             onClick={() => toggleAdmin(user.id, user.is_admin)}
-                            className={`px-3 py-1 rounded text-xs font-medium ${
+                            className={`px-3 py-1 rounded text-xs font-medium whitespace-nowrap ${
                               user.is_admin
                                 ? 'bg-yellow-600 dark:bg-yellow-500 text-white hover:bg-yellow-700 dark:hover:bg-yellow-600'
                                 : 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600'
@@ -422,7 +422,7 @@ export default function AdminUsersPage() {
                             {user.is_admin ? '권한 해제' : '관리자 부여'}
                           </button>
                         </td>
-                        <td className="px-6 py-4 text-sm">
+                        <td className="px-4 py-4 text-sm text-center">
                           <button
                             onClick={() => deleteUser(user.id, user.name)}
                             className="px-3 py-1 bg-red-600 dark:bg-red-500 text-white rounded text-xs font-medium hover:bg-red-700 dark:hover:bg-red-600"
