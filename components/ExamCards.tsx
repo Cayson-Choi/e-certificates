@@ -75,25 +75,25 @@ export default function ExamCards({ initialExams }: { initialExams: Exam[] }) {
         <Link
           key={exam.id}
           href={`/exam/${exam.id}`}
-          className={`bg-gradient-to-br ${examCardStyles[index % examCardStyles.length]} rounded-xl p-5 text-white shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 ${floatClasses[index % floatClasses.length]} group`}
+          className={`bg-gradient-to-br ${examCardStyles[index % examCardStyles.length]} rounded-lg lg:rounded-xl p-1.5 lg:p-4 text-white shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 ${floatClasses[index % floatClasses.length]} group`}
         >
-          <div className="flex items-center justify-end gap-2 mb-3">
+          <div className="flex items-center justify-end gap-1 mb-0.5 lg:mb-2">
             {exam.exam_mode === 'OFFICIAL' && (
-              <span className="text-xs bg-red-500/80 px-2 py-0.5 rounded-full font-semibold">
+              <span className="text-[10px] lg:text-xs bg-red-500/80 px-1.5 lg:px-2 py-0.5 rounded-full font-semibold">
                 공식 시험
               </span>
             )}
-            <span className="text-xs bg-white/20 px-2.5 py-0.5 rounded-full backdrop-blur-sm">
+            <span className="text-[10px] lg:text-xs bg-white/20 px-1.5 lg:px-2.5 py-0.5 rounded-full backdrop-blur-sm">
               {exam.duration_minutes || 60}분
             </span>
           </div>
-          <h3 className="text-lg font-bold mb-1">{exam.name}</h3>
-          <p className="text-xs text-white/70 mb-3">
+          <h3 className="text-sm lg:text-base font-bold mb-0.5 lg:mb-1">{exam.name}</h3>
+          <p className="text-[10px] lg:text-xs text-white/70 mb-0.5 lg:mb-2">
             {exam.exam_mode === 'OFFICIAL' && exam.creator_name
               ? `${exam.creator_name}${exam.creator_title ? `(${exam.creator_title})` : ''}`
               : examCardDescriptions[index % examCardDescriptions.length]}
           </p>
-          <div className="flex items-center text-xs font-medium text-white/90 group-hover:text-white transition-colors">
+          <div className="flex items-center text-[10px] lg:text-xs font-medium text-white/90 group-hover:text-white transition-colors">
             시험 응시하기
             <svg
               className="w-3.5 h-3.5 ml-1 group-hover:translate-x-1 transition-transform"

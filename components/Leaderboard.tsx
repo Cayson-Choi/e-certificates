@@ -310,25 +310,25 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
           <div className="lg:col-span-2 space-y-4">
             {/* My rank card */}
             {data.my_rank != null && data.my_score != null ? (
-              <div className="bg-gradient-to-br from-blue-900 to-gray-900 border border-blue-500/40 rounded-2xl p-5 shadow-xl">
-                <div className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-3">
+              <div className="bg-gradient-to-br from-blue-900 to-gray-900 border border-blue-500/40 rounded-2xl p-3 lg:p-4 shadow-xl">
+                <div className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-2">
                   내 순위
                 </div>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-blue-500/20 border-2 border-blue-400/50 rounded-xl flex items-center justify-center">
-                      <span className="text-blue-400 text-lg font-black">
+                  <div className="flex items-center gap-2">
+                    <div className="w-9 h-9 lg:w-10 lg:h-10 bg-blue-500/20 border-2 border-blue-400/50 rounded-lg flex items-center justify-center">
+                      <span className="text-blue-400 text-sm font-black">
                         {data.my_rank}
                       </span>
                     </div>
-                    <div className="text-lg font-bold text-white">
+                    <div className="text-sm lg:text-base font-bold text-white">
                       {data.my_rank}위
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-black text-blue-400">
+                    <div className="text-xl font-black text-blue-400">
                       {data.my_score}
-                      <span className="text-sm text-blue-400/60">점</span>
+                      <span className="text-xs text-blue-400/60">점</span>
                     </div>
                     {gapToFirst != null && gapToFirst > 0 && (
                       <div className="text-xs text-blue-300/50 mt-0.5">
@@ -344,7 +344,7 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
                 </div>
                 <a
                   href="#exams"
-                  className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-xl transition-all"
+                  className="mt-2 lg:mt-3 w-full flex items-center justify-center gap-2 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl transition-all"
                 >
                   다시 도전하기
                   <svg
@@ -363,16 +363,16 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
                 </a>
               </div>
             ) : (
-              <div className="bg-gradient-to-br from-blue-900 to-gray-900 border border-blue-500/40 rounded-2xl p-5 shadow-xl">
-                <div className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-3">
+              <div className="bg-gradient-to-br from-blue-900 to-gray-900 border border-blue-500/40 rounded-2xl p-3 lg:p-4 shadow-xl">
+                <div className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-2">
                   내 순위
                 </div>
-                <p className="text-gray-400 text-sm mb-4">
+                <p className="text-gray-400 text-xs mb-2">
                   아직 오늘 응시 기록이 없습니다
                 </p>
                 <a
                   href="#exams"
-                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-xl transition-all"
+                  className="w-full flex items-center justify-center gap-2 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl transition-all"
                 >
                   도전하기
                   <svg
@@ -393,8 +393,8 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
             )}
 
             {/* Yesterday Top 5 */}
-            <div className="bg-gray-900 border border-gray-700 rounded-2xl p-5 shadow-xl">
-              <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+            <div className="bg-gray-900 border border-gray-700 rounded-2xl p-2.5 lg:p-3 shadow-xl">
+              <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
                 어제 Top 5
               </div>
               {yesterday.length > 0 ? (() => {

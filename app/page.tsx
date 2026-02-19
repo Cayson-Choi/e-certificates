@@ -63,8 +63,8 @@ export default async function Home() {
 
       {/* Features */}
       <section className="bg-white dark:bg-gray-800 border-y border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="text-center mb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               주요 기능
             </h2>
@@ -73,7 +73,7 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 max-w-5xl mx-auto">
             <div className="text-center p-6 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
               <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900/40 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <svg
@@ -94,7 +94,7 @@ export default async function Home() {
                 CBT 모의고사
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                60분 제한 시간 내
+                제한 시간 내
                 <br />
                 객관식 문제 풀이
               </p>

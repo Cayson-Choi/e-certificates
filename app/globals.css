@@ -63,6 +63,13 @@ body {
 .float-animation-delay { animation: float 3s ease-in-out 0.5s infinite; }
 .float-animation-delay2 { animation: float 3s ease-in-out 1s infinite; }
 .crown-bounce { animation: crownBounce 2s ease-in-out infinite; }
+
+@keyframes wingShimmer {
+  0%, 100% { filter: drop-shadow(0 0 3px #ffd700) brightness(1); }
+  25% { filter: drop-shadow(0 0 8px #ffec8b) brightness(1.5); }
+  50% { filter: drop-shadow(0 0 5px #ffd700) brightness(1.2); }
+  75% { filter: drop-shadow(0 0 10px #fff7a0) brightness(1.6); }
+}
 .pulse-gold { animation: pulseRing 2s ease-out infinite; }
 .gold-glow {
   box-shadow: 0 0 30px rgba(251, 191, 36, 0.3), 0 0 60px rgba(251, 191, 36, 0.1);
@@ -151,9 +158,9 @@ body {
   position: fixed;
   z-index: 50;
   pointer-events: none;
-  animation: butterflyPath 30s ease-in-out infinite, butterflyBob 1.5s ease-in-out infinite;
   will-change: top, left;
   filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25));
+  animation: butterflyPath 30s ease-in-out infinite, butterflyBob 1.5s ease-in-out infinite, wingShimmer 1.5s ease-in-out infinite;
 }
 
 .butterfly-svg {

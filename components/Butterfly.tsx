@@ -101,34 +101,64 @@ export default function Butterfly() {
           className="wing-upper-left"
           d="M-2,-4 C-10,-25 -45,-35 -50,-15 C-55,5 -30,5 -20,8 C-12,10 -5,5 -2,-4Z"
           fill="url(#wingGrad1)"
-          opacity="0.85"
+          filter="url(#wingGlow)"
+          opacity="0.9"
         />
         {/* Left lower wing */}
         <path
           className="wing-lower-left"
           d="M-2,2 C-8,10 -35,30 -25,35 C-15,40 -8,20 -2,8Z"
           fill="url(#wingGrad2)"
-          opacity="0.8"
+          filter="url(#wingGlow)"
+          opacity="0.85"
         />
         {/* Right upper wing */}
         <path
           className="wing-upper-right"
           d="M2,-4 C10,-25 45,-35 50,-15 C55,5 30,5 20,8 C12,10 5,5 2,-4Z"
           fill="url(#wingGrad1)"
-          opacity="0.85"
+          filter="url(#wingGlow)"
+          opacity="0.9"
         />
         {/* Right lower wing */}
         <path
           className="wing-lower-right"
           d="M2,2 C8,10 35,30 25,35 C15,40 8,20 2,8Z"
           fill="url(#wingGrad2)"
-          opacity="0.8"
+          filter="url(#wingGlow)"
+          opacity="0.85"
         />
-        {/* Wing patterns - spots */}
-        <circle className="wing-upper-left" cx="-28" cy="-12" r="5" fill="rgba(255,255,255,0.5)" />
-        <circle className="wing-upper-left" cx="-18" cy="-18" r="3" fill="rgba(255,255,255,0.3)" />
-        <circle className="wing-upper-right" cx="28" cy="-12" r="5" fill="rgba(255,255,255,0.5)" />
-        <circle className="wing-upper-right" cx="18" cy="-18" r="3" fill="rgba(255,255,255,0.3)" />
+        {/* Wing patterns - colorful dots */}
+        <circle className="wing-upper-left" cx="-30" cy="-15" r="4" fill="#ff3e7a" opacity="0.8" />
+        <circle className="wing-upper-left" cx="-20" cy="-22" r="3" fill="#7b5cff" opacity="0.7" />
+        <circle className="wing-upper-left" cx="-38" cy="-8" r="3.5" fill="#00d4aa" opacity="0.7" />
+        <circle className="wing-upper-left" cx="-22" cy="-8" r="2.5" fill="#ff8c00" opacity="0.8" />
+        <circle className="wing-upper-left" cx="-35" cy="-22" r="2" fill="#00bfff" opacity="0.7" />
+        <circle className="wing-upper-left" cx="-14" cy="-16" r="2" fill="#ff69b4" opacity="0.6" />
+        <circle className="wing-upper-left" cx="-42" cy="-18" r="1.5" fill="#ff4500" opacity="0.7" />
+        <circle className="wing-upper-left" cx="-26" cy="-3" r="1.8" fill="#e040fb" opacity="0.6" />
+        <circle className="wing-upper-left" cx="-18" cy="-12" r="1.5" fill="#00e5ff" opacity="0.7" />
+        <circle className="wing-upper-left" cx="-32" cy="-5" r="2" fill="#76ff03" opacity="0.6" />
+        <circle className="wing-lower-left" cx="-15" cy="20" r="2.5" fill="#ff5577" opacity="0.7" />
+        <circle className="wing-lower-left" cx="-10" cy="28" r="2" fill="#7b5cff" opacity="0.6" />
+        <circle className="wing-lower-left" cx="-18" cy="14" r="1.5" fill="#00d4aa" opacity="0.6" />
+        <circle className="wing-lower-left" cx="-8" cy="22" r="1.8" fill="#ff8c00" opacity="0.7" />
+        <circle className="wing-lower-left" cx="-20" cy="25" r="1.5" fill="#00bfff" opacity="0.6" />
+        <circle className="wing-upper-right" cx="30" cy="-15" r="4" fill="#ff3e7a" opacity="0.8" />
+        <circle className="wing-upper-right" cx="20" cy="-22" r="3" fill="#7b5cff" opacity="0.7" />
+        <circle className="wing-upper-right" cx="38" cy="-8" r="3.5" fill="#00d4aa" opacity="0.7" />
+        <circle className="wing-upper-right" cx="22" cy="-8" r="2.5" fill="#ff8c00" opacity="0.8" />
+        <circle className="wing-upper-right" cx="35" cy="-22" r="2" fill="#00bfff" opacity="0.7" />
+        <circle className="wing-upper-right" cx="14" cy="-16" r="2" fill="#ff69b4" opacity="0.6" />
+        <circle className="wing-upper-right" cx="42" cy="-18" r="1.5" fill="#ff4500" opacity="0.7" />
+        <circle className="wing-upper-right" cx="26" cy="-3" r="1.8" fill="#e040fb" opacity="0.6" />
+        <circle className="wing-upper-right" cx="18" cy="-12" r="1.5" fill="#00e5ff" opacity="0.7" />
+        <circle className="wing-upper-right" cx="32" cy="-5" r="2" fill="#76ff03" opacity="0.6" />
+        <circle className="wing-lower-right" cx="15" cy="20" r="2.5" fill="#ff5577" opacity="0.7" />
+        <circle className="wing-lower-right" cx="10" cy="28" r="2" fill="#7b5cff" opacity="0.6" />
+        <circle className="wing-lower-right" cx="18" cy="14" r="1.5" fill="#00d4aa" opacity="0.6" />
+        <circle className="wing-lower-right" cx="8" cy="22" r="1.8" fill="#ff8c00" opacity="0.7" />
+        <circle className="wing-lower-right" cx="20" cy="25" r="1.5" fill="#00bfff" opacity="0.6" />
         {/* Body */}
         <ellipse cx="0" cy="2" rx="2.5" ry="14" fill="#1a1a1a" />
         {/* Head */}
@@ -138,22 +168,30 @@ export default function Butterfly() {
         <circle cx="1.8" cy="-14" r="0.8" fill="#fff" />
         {/* Antennae */}
         <path d="M-1.5,-16 C-6,-28 -12,-32 -15,-30" stroke="#1a1a1a" strokeWidth="0.8" fill="none" />
-        <circle cx="-15" cy="-30" r="1.2" fill="#ff6b35" />
+        <circle cx="-15" cy="-30" r="1.2" fill="#1a1a1a" />
         <path d="M1.5,-16 C6,-28 12,-32 15,-30" stroke="#1a1a1a" strokeWidth="0.8" fill="none" />
-        <circle cx="15" cy="-30" r="1.2" fill="#ff6b35" />
+        <circle cx="15" cy="-30" r="1.2" fill="#1a1a1a" />
         {/* Gradients */}
         <defs>
           <linearGradient id="wingGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ff6b35" />
-            <stop offset="40%" stopColor="#ff3e00" />
-            <stop offset="70%" stopColor="#e63900" />
-            <stop offset="100%" stopColor="#ff8c00" />
+            <stop offset="0%" stopColor="#fff7a0" />
+            <stop offset="30%" stopColor="#ffd700" />
+            <stop offset="50%" stopColor="#ffec8b" />
+            <stop offset="70%" stopColor="#ffb800" />
+            <stop offset="100%" stopColor="#ffe44d" />
           </linearGradient>
           <linearGradient id="wingGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ff5500" />
-            <stop offset="50%" stopColor="#ff3e00" />
-            <stop offset="100%" stopColor="#cc3300" />
+            <stop offset="0%" stopColor="#ffe44d" />
+            <stop offset="50%" stopColor="#ffd700" />
+            <stop offset="100%" stopColor="#ffb800" />
           </linearGradient>
+          <filter id="wingGlow">
+            <feGaussianBlur stdDeviation="2" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
         </defs>
       </svg>
     </div>
