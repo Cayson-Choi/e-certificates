@@ -12,7 +12,7 @@ interface Heart {
   angle: number
 }
 
-const heartColors = ['#ff69b4', '#ffb6c1', '#ffd700', '#ffec8b', '#ff91ca', '#fffacd', '#ffc0cb', '#ffe066']
+const heartColors = ['#ff8a8a', '#ffb3b3', '#ffa0c4', '#ffb6d9', '#a0c4ff', '#b3d4ff', '#8ce8d0', '#a8f0df']
 
 export default function Butterfly() {
   const [mounted, setMounted] = useState(false)
