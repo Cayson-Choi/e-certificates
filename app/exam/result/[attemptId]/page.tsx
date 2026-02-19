@@ -296,11 +296,11 @@ export default function ExamResultPage({
                       )}
 
                       {question.explanation && (
-                        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
-                          <div className="font-semibold text-blue-900 dark:text-blue-300 mb-1">해설</div>
+                        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-3">
+                          <div className="text-xs font-semibold text-blue-900 dark:text-blue-300 mb-1">해설</div>
                           <MathText
                             text={question.explanation}
-                            className="text-blue-800 dark:text-blue-200"
+                            className="text-sm text-blue-800 dark:text-blue-200"
                           />
                         </div>
                       )}
