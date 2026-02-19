@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, use } from 'react'
+import { useEffect, useState, use, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import QuestionSplitEditor from '@/components/QuestionSplitEditor'
@@ -209,6 +209,16 @@ export default function OfficialExamDetailPage({
   const [editingSettings, setEditingSettings] = useState(false)
   const [settingsForm, setSettingsForm] = useState({ password: '', duration_minutes: 60 })
   const [savingSettings, setSavingSettings] = useState(false)
+
+  // AI 채점 중 페이지 이탈 경고
+  useEffect(() => {
+    if (!aiGrading) return
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [aiGrading])
 
   // 시험 정보 + 결과 동시 로드
   useEffect(() => {
