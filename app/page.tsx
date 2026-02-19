@@ -26,17 +26,19 @@ export default async function Home() {
       <section className="relative overflow-hidden">
         {/* Background image */}
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/hero-bg.png')" }}
+          className="absolute inset-0 bg-cover bg-no-repeat"
+          style={{ backgroundImage: "url('/hero-bg.png')", backgroundPosition: 'center 0%' }}
         />
         {/* Light overlay */}
         <div className="absolute inset-0" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 lg:pt-14 pb-16 lg:pb-20">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 lg:pt-32 pb-16 lg:pb-20">
           {/* Compact hero text */}
           <div className="text-center mb-4">
             <h1 className="text-4xl lg:text-5xl font-extrabold text-white mb-3 leading-tight tracking-tight hero-text-stroke">
-              화성폴리텍대학{' '}
+              화성폴리텍대학
+              <br className="lg:hidden" />
+              {' '}
               <span className="text-sky-300 font-black">
                 스마트 전기과
               </span>
