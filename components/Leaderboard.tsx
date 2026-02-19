@@ -198,7 +198,7 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
                           </span>
                         </div>
                         <div>
-                          <div className="text-base lg:text-xl font-bold text-white">
+                          <div className="text-lg lg:text-xl font-bold text-white">
                             {first.name}
                           </div>
                           <div className="text-xs lg:text-sm text-yellow-300/70">
