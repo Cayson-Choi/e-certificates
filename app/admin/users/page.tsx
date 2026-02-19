@@ -358,8 +358,8 @@ export default function AdminUsersPage() {
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 whitespace-nowrap">
                         이메일
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 whitespace-nowrap">
-                        전화번호
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300">
+                        <div>전화</div><div>번호</div>
                       </th>
                       <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300">
                         <div>응시</div><div>횟수</div>
@@ -388,7 +388,8 @@ export default function AdminUsersPage() {
                           {user.affiliation}
                         </td>
                         <td className="px-4 py-4 text-sm text-gray-900 dark:text-gray-100">
-                          {user.email}
+                          <div>{user.email.split('@')[0]}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">@{user.email.split('@')[1]}</div>
                         </td>
                         <td className="px-4 py-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
                           {user.phone || '-'}
@@ -407,19 +408,28 @@ export default function AdminUsersPage() {
                             </span>
                           )}
                         </td>
-                        <td className="px-4 py-4 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                          {new Date(user.created_at).toLocaleDateString('ko-KR')}
+                        <td className="px-4 py-4 text-sm text-gray-600 dark:text-gray-400">
+                          {(() => {
+                            const d = new Date(user.created_at)
+                            return (
+                              <>
+                                <div>{d.getFullYear()}</div>
+                                <div className="text-xs">{d.getMonth() + 1}.{d.getDate()}</div>
+                              </>
+                            )
+                          })()}
                         </td>
                         <td className="px-4 py-4 text-sm text-center">
                           <button
                             onClick={() => toggleAdmin(user.id, user.is_admin)}
-                            className={`px-3 py-1 rounded text-xs font-medium whitespace-nowrap ${
+                            className={`px-1 py-1.5 rounded text-xs font-medium leading-tight ${
                               user.is_admin
                                 ? 'bg-yellow-600 dark:bg-yellow-500 text-white hover:bg-yellow-700 dark:hover:bg-yellow-600'
                                 : 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600'
                             }`}
+                            style={{ writingMode: 'vertical-rl' }}
                           >
-                            {user.is_admin ? '권한 해제' : '관리자 부여'}
+                            {user.is_admin ? '권한해제' : '관리자부여'}
                           </button>
                         </td>
                         <td className="px-4 py-4 text-sm text-center">
