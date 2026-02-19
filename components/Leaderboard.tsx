@@ -167,7 +167,7 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
 
       {/* Ranking header */}
       <div className="text-center mb-6">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gray-900/90 border border-yellow-500/30 rounded-full mb-4 shadow-lg">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gray-900/90 border border-yellow-500/30 rounded-full mb-4 shadow-lg -mt-6 lg:mt-0">
           <svg
             className="w-4 h-4 text-yellow-400"
             fill="currentColor"
