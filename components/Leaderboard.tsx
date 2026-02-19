@@ -180,115 +180,111 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
         <div className="grid lg:grid-cols-5 gap-5 max-w-6xl mx-auto items-start">
           {/* Left: Today Top 5 (3 cols) */}
           <div className="lg:col-span-3">
-            {first ? (
-              <>
-                {/* 1st place highlight */}
-                <div className="bg-gradient-to-r from-yellow-900 via-gray-900 to-yellow-900 border border-yellow-500/40 rounded-2xl p-5 mb-3 gold-glow relative shadow-xl">
-                  <div className="absolute -top-3 left-5">
-                    <span className="crown-bounce inline-block text-2xl">
-                      &#x1F451;
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-2xl flex items-center justify-center shadow-lg pulse-gold">
-                        <span className="text-yellow-900 text-xl font-black">
-                          1
-                        </span>
-                      </div>
-                      <div>
-                        <div className="text-xl font-bold text-white">
-                          {first.name}
-                        </div>
-                        <div className="text-sm text-yellow-300/70">
-                          {first.affiliation}
-                        </div>
-                      </div>
+            <div className="bg-gray-900 border border-gray-700 rounded-2xl shadow-xl">
+              {first ? (
+                <>
+                  {/* 1st place highlight */}
+                  <div className="bg-gradient-to-r from-yellow-900 via-gray-900 to-yellow-900 rounded-t-2xl p-5 gold-glow relative">
+                    <div className="absolute -top-8 -left-4">
+                      <span className="crown-bounce inline-block text-6xl">
+                        &#x1F451;
+                      </span>
                     </div>
-                    <div className="text-right">
-                      {first.status && (
-                        <div className="flex items-center gap-2 justify-end mb-1">
-                          {getStatusBadge(first.status, first.rank_change)}
-                        </div>
-                      )}
-                      <div className="text-3xl font-black text-yellow-400">
-                        {first.score}
-                        <span className="text-lg text-yellow-400/70">점</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 2nd~5th */}
-                <div className="space-y-2">
-                  {rest.map((user) => (
-                    <div
-                      key={user.rank}
-                      className={`border rounded-xl p-3.5 flex items-center justify-between hover:bg-gray-800 transition-colors shadow-lg ${
-                        user.rank <= 3
-                          ? 'bg-gray-900 border-gray-600'
-                          : 'bg-gray-900/95 border-gray-700'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center ${getRankBadge(user.rank)}`}
-                        >
-                          <span className="text-sm font-black">
-                            {user.rank}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-2xl flex items-center justify-center shadow-lg pulse-gold">
+                          <span className="text-yellow-900 text-xl font-black">
+                            1
                           </span>
                         </div>
                         <div>
-                          <div
-                            className={`text-base font-bold ${user.rank <= 3 ? 'text-white' : 'text-gray-300'}`}
-                          >
-                            {user.name}
+                          <div className="text-xl font-bold text-white">
+                            {first.name}
                           </div>
-                          <div
-                            className={`text-xs ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}
-                          >
-                            {user.affiliation}
+                          <div className="text-sm text-yellow-300/70">
+                            {first.affiliation}
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        {getStatusBadge(user.status, user.rank_change)}
-                        <span
-                          className={`text-xl font-bold ${user.rank <= 3 ? 'text-white' : 'text-gray-300'}`}
-                        >
-                          {user.score}
-                          <span
-                            className={`text-sm ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}
-                          >
-                            점
-                          </span>
-                        </span>
+                        {getStatusBadge(first.status, first.rank_change)}
+                        <div className="text-3xl font-black text-yellow-400">
+                          {first.score}
+                          <span className="text-lg text-yellow-400/70">점</span>
+                        </div>
                       </div>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* 2nd~5th */}
+                  {rest.length > 0 && (
+                    <div className="px-4 pb-4 pt-3 space-y-2">
+                      {rest.map((user) => (
+                        <div
+                          key={user.rank}
+                          className="rounded-xl p-3.5 flex items-center justify-between hover:bg-gray-800 transition-colors"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`w-10 h-10 rounded-xl flex items-center justify-center ${getRankBadge(user.rank)}`}
+                            >
+                              <span className="text-sm font-black">
+                                {user.rank}
+                              </span>
+                            </div>
+                            <div>
+                              <div
+                                className={`text-base font-bold ${user.rank <= 3 ? 'text-white' : 'text-gray-300'}`}
+                              >
+                                {user.name}
+                              </div>
+                              <div
+                                className={`text-xs ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}
+                              >
+                                {user.affiliation}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            {getStatusBadge(user.status, user.rank_change)}
+                            <span
+                              className={`text-xl font-bold ${user.rank <= 3 ? 'text-white' : 'text-gray-300'}`}
+                            >
+                              {user.score}
+                              <span
+                                className={`text-sm ${user.rank <= 3 ? 'text-gray-400' : 'text-gray-500'}`}
+                              >
+                                점
+                              </span>
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="p-12 text-center">
+                  <svg
+                    className="w-12 h-12 mx-auto mb-3 text-gray-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <p className="text-gray-500">아직 오늘 기록이 없습니다</p>
+                  <p className="text-gray-600 text-sm mt-1">
+                    첫 번째 도전자가 되어보세요!
+                  </p>
                 </div>
-              </>
-            ) : (
-              <div className="bg-gray-900 border border-gray-700 rounded-2xl p-12 text-center shadow-xl">
-                <svg
-                  className="w-12 h-12 mx-auto mb-3 text-gray-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                <p className="text-gray-500">아직 오늘 기록이 없습니다</p>
-                <p className="text-gray-600 text-sm mt-1">
-                  첫 번째 도전자가 되어보세요!
-                </p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Right: My rank + Yesterday Top 5 (2 cols) */}
