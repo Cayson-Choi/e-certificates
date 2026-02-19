@@ -32,18 +32,18 @@ export default async function Home() {
         {/* Light overlay */}
         <div className="absolute inset-0" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-1 lg:pt-10 pb-16 lg:pb-20">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 lg:pt-10 pb-16 lg:pb-20">
           {/* Compact hero text */}
           <div className="text-center mb-4">
             <h1 className="text-4xl lg:text-5xl font-extrabold text-white mb-3 leading-tight tracking-tight hero-text-stroke">
               화성폴리텍대학
               <br className="lg:hidden" />
               {' '}
-              <span className="font-black">
+              <span className="font-black inline-block -mt-5 lg:mt-0 lg:inline">
                 <span className="text-sky-300 sparkle-text" style={{ fontFamily: "'Nanum Pen Script', cursive", fontSize: '1.9em', verticalAlign: '-0.15em' }}>스마트</span> <span className="text-sky-300">전기과</span>
               </span>
             </h1>
-            <p className="text-base text-white leading-relaxed hero-subtext-stroke">
+            <p className="text-base text-white leading-relaxed hero-subtext-stroke -mt-1 lg:mt-0">
               모의고사를 풀고, 즉시 채점하고, 랭킹으로 경쟁하세요.
             </p>
           </div>
