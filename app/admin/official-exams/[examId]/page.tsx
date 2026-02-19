@@ -113,22 +113,30 @@ function printResultsSummary(examName: string, results: any[]) {
   const w = window.open('', '_blank')
   if (!w) { alert('팝업이 차단되었습니다.'); return }
 
-  const avgScore = results.length > 0
-    ? Math.round(results.reduce((sum: number, r: any) => sum + r.total_score, 0) / results.length)
+  const gradedOnly = results.filter((r: any) => r.grading_status !== 'PENDING_MANUAL')
+  const pendingOnly = results.filter((r: any) => r.grading_status === 'PENDING_MANUAL')
+  const avgScore = gradedOnly.length > 0
+    ? Math.round(gradedOnly.reduce((sum: number, r: any) => sum + r.total_score, 0) / gradedOnly.length)
     : 0
-  const passCount = results.filter((r: any) => r.total_score >= 60).length
+  const passCount = gradedOnly.filter((r: any) => r.total_score >= 60).length
+  const failCount = gradedOnly.filter((r: any) => r.total_score < 60).length
 
-  const rows = results.map((r: any, idx: number) => `
+  const rows = results.map((r: any, idx: number) => {
+    const isPending = r.grading_status === 'PENDING_MANUAL'
+    const scoreColor = isPending ? '#ca8a04' : r.total_score >= 60 ? '#16a34a' : '#dc2626'
+    const scoreText = isPending ? `${r.total_score}점 (대기)` : `${r.total_score}점`
+    return `
     <tr>
       <td>${idx + 1}</td>
       <td>${escapeHtml(r.student_id || '-')}</td>
       <td>${escapeHtml(r.name)}</td>
       <td>${escapeHtml(r.affiliation || '-')}</td>
-      <td style="font-weight:700; color:${r.total_score >= 60 ? '#16a34a' : '#dc2626'};">${r.total_score}점</td>
+      <td style="font-weight:700; color:${scoreColor};">${scoreText}</td>
       <td>${r.total_correct}/${r.total_questions}</td>
       <td>${r.violation_count > 0 ? r.violation_count + '회' : '0'}</td>
       <td>${r.started_at ? new Date(r.started_at).toLocaleDateString('ko-KR') : new Date(r.submitted_at).toLocaleString('ko-KR')}</td>
-    </tr>`).join('')
+    </tr>`
+  }).join('')
 
   w.document.write(`<!DOCTYPE html>
 <html><head>
@@ -150,7 +158,8 @@ function printResultsSummary(examName: string, results: any[]) {
   <span>응시자: ${results.length}명</span>
   <span>평균: ${avgScore}점</span>
   <span>합격: ${passCount}명</span>
-  <span>불합격: ${results.length - passCount}명</span>
+  <span>불합격: ${failCount}명</span>
+  ${pendingOnly.length > 0 ? `<span>채점 대기: ${pendingOnly.length}명</span>` : ''}
 </div>
 <table>
   <thead><tr><th>순위</th><th>학번</th><th>이름</th><th>소속</th><th>점수</th><th>정답</th><th>이탈</th><th>시험 날짜</th></tr></thead>
@@ -435,10 +444,13 @@ export default function OfficialExamDetailPage({
     )
   }
 
-  const avgScore = results.length > 0
-    ? Math.round(results.reduce((sum, r) => sum + r.total_score, 0) / results.length)
+  const pendingResults = results.filter((r) => r.grading_status === 'PENDING_MANUAL')
+  const gradedResults = results.filter((r) => r.grading_status !== 'PENDING_MANUAL')
+  const avgScore = gradedResults.length > 0
+    ? Math.round(gradedResults.reduce((sum, r) => sum + r.total_score, 0) / gradedResults.length)
     : 0
-  const passCount = results.filter((r) => r.total_score >= 60).length
+  const passCount = gradedResults.filter((r) => r.total_score >= 60).length
+  const failCount = gradedResults.filter((r) => r.total_score < 60).length
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
@@ -753,30 +765,36 @@ export default function OfficialExamDetailPage({
             </div>
 
             {/* 통계 */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border dark:border-gray-700 text-center">
-                <div className="text-sm text-gray-600 dark:text-gray-400">응시자</div>
-                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                  {results.length}명
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-4 border dark:border-gray-700">
+              <div className="flex items-center gap-4 flex-wrap text-sm">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-gray-500 dark:text-gray-400">응시자</span>
+                  <span className="font-bold text-blue-600 dark:text-blue-400">{results.length}명</span>
                 </div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border dark:border-gray-700 text-center">
-                <div className="text-sm text-gray-600 dark:text-gray-400">평균 점수</div>
-                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                  {avgScore}점
+                <span className="text-gray-300 dark:text-gray-600">|</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-gray-500 dark:text-gray-400">평균</span>
+                  <span className="font-bold text-purple-600 dark:text-purple-400">{avgScore}점</span>
                 </div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border dark:border-gray-700 text-center">
-                <div className="text-sm text-gray-600 dark:text-gray-400">합격</div>
-                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {passCount}명
+                <span className="text-gray-300 dark:text-gray-600">|</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-gray-500 dark:text-gray-400">합격</span>
+                  <span className="font-bold text-green-600 dark:text-green-400">{passCount}명</span>
                 </div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border dark:border-gray-700 text-center">
-                <div className="text-sm text-gray-600 dark:text-gray-400">불합격</div>
-                <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-                  {results.length - passCount}명
+                <span className="text-gray-300 dark:text-gray-600">|</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-gray-500 dark:text-gray-400">불합격</span>
+                  <span className="font-bold text-red-600 dark:text-red-400">{failCount}명</span>
                 </div>
+                {pendingResults.length > 0 && (
+                  <>
+                    <span className="text-gray-300 dark:text-gray-600">|</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-gray-500 dark:text-gray-400">채점 대기</span>
+                      <span className="font-bold text-yellow-600 dark:text-yellow-400">{pendingResults.length}명</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
