@@ -14,6 +14,8 @@ export default function AdminUsersPage() {
   const [affiliationFilter, setAffiliationFilter] = useState<string>('all')
   const [adminFilter, setAdminFilter] = useState<string>('all')
   const [todayStats, setTodayStats] = useState<any[]>([])
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [pendingBulkDelete, setPendingBulkDelete] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 20
 
@@ -58,6 +60,7 @@ export default function AdminUsersPage() {
 
     setFilteredUsers(filtered)
     setCurrentPage(1)
+    setSelectedIds(new Set())
   }, [users, searchQuery, affiliationFilter, adminFilter])
 
   // 소속별 통계 계산
@@ -161,6 +164,42 @@ export default function AdminUsersPage() {
     } catch (err) {
       console.error('Delete user error:', err)
     }
+  }
+
+  const toggleSelect = (userId: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(userId)) next.delete(userId)
+      else next.add(userId)
+      return next
+    })
+  }
+
+  const toggleSelectAll = (pageUserIds: string[]) => {
+    const allSelected = pageUserIds.every((id) => selectedIds.has(id))
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (allSelected) {
+        pageUserIds.forEach((id) => next.delete(id))
+      } else {
+        pageUserIds.forEach((id) => next.add(id))
+      }
+      return next
+    })
+  }
+
+  const confirmBulkDelete = async () => {
+    setPendingBulkDelete(false)
+    const ids = Array.from(selectedIds)
+    for (const id of ids) {
+      try {
+        await fetch(`/api/admin/users/${id}`, { method: 'DELETE' })
+      } catch (err) {
+        console.error('Bulk delete error:', err)
+      }
+    }
+    setSelectedIds(new Set())
+    loadUsers()
   }
 
   if (loading) {
@@ -329,12 +368,22 @@ export default function AdminUsersPage() {
           return (
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-8 border dark:border-gray-700">
               <div className="px-6 pt-6 pb-4 flex items-center justify-between">
-                <h2 className="text-xl font-bold dark:text-white">
-                  회원 목록 ({filteredUsers.length}명
-                  {filteredUsers.length !== users.length &&
-                    ` / 전체 ${users.length}명`}
-                  )
-                </h2>
+                <div className="flex items-center gap-3">
+                  <h2 className="text-xl font-bold dark:text-white">
+                    회원 목록 ({filteredUsers.length}명
+                    {filteredUsers.length !== users.length &&
+                      ` / 전체 ${users.length}명`}
+                    )
+                  </h2>
+                  {selectedIds.size > 0 && (
+                    <button
+                      onClick={() => setPendingBulkDelete(true)}
+                      className="px-3 py-1.5 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                      선택 삭제 ({selectedIds.size}명)
+                    </button>
+                  )}
+                </div>
                 {totalPages > 1 && (
                   <span className="text-sm text-gray-500 dark:text-gray-400">
                     {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredUsers.length)}번째
@@ -349,6 +398,14 @@ export default function AdminUsersPage() {
                 <table className="w-full text-xs lg:text-sm">
                   <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
+                      <th className="px-2 py-2 lg:py-3 text-center">
+                        <input
+                          type="checkbox"
+                          checked={paginatedUsers.length > 0 && paginatedUsers.filter(u => !u.is_admin).every(u => selectedIds.has(u.id))}
+                          onChange={() => toggleSelectAll(paginatedUsers.filter(u => !u.is_admin).map(u => u.id))}
+                          className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 cursor-pointer"
+                        />
+                      </th>
                       <th className="px-2 lg:px-4 py-2 lg:py-3 font-medium text-gray-500 dark:text-gray-300 text-center mobile-vertical">이름</th>
                       <th className="px-2 lg:px-4 py-2 lg:py-3 font-medium text-gray-500 dark:text-gray-300 text-center mobile-vertical">소속</th>
                       <th className="px-2 lg:px-4 py-2 lg:py-3 font-medium text-gray-500 dark:text-gray-300 text-center mobile-vertical">이메일</th>
@@ -362,7 +419,19 @@ export default function AdminUsersPage() {
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
                     {paginatedUsers.map((user) => (
-                      <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <tr key={user.id} className={`hover:bg-gray-50 dark:hover:bg-gray-700 ${selectedIds.has(user.id) ? 'bg-red-50 dark:bg-red-900/20' : ''}`}>
+                        <td className="px-2 py-3 text-center">
+                          {user.is_admin ? (
+                            <span className="w-4 h-4 inline-block" />
+                          ) : (
+                            <input
+                              type="checkbox"
+                              checked={selectedIds.has(user.id)}
+                              onChange={() => toggleSelect(user.id)}
+                              className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 cursor-pointer"
+                            />
+                          )}
+                        </td>
                         <td className="px-2 lg:px-4 py-3 text-gray-900 dark:text-gray-100 text-center font-medium mobile-vertical">
                           {user.name}
                         </td>
@@ -472,6 +541,16 @@ export default function AdminUsersPage() {
           confirmColor="red"
           onConfirm={confirmDeleteUser}
           onCancel={() => setPendingDelete(null)}
+        />
+
+        <ConfirmDialog
+          open={pendingBulkDelete}
+          title="선택 회원 일괄 삭제"
+          message={`선택한 ${selectedIds.size}명의 회원을 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없으며, 해당 회원들의 모든 데이터가 삭제됩니다.`}
+          confirmText="일괄 삭제"
+          confirmColor="red"
+          onConfirm={confirmBulkDelete}
+          onCancel={() => setPendingBulkDelete(false)}
         />
       </div>
     </div>
