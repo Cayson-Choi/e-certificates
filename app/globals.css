@@ -125,6 +125,16 @@ body {
     0 0 20px rgba(0,0,0,0.5);
 }
 
+/* 모바일에서만 세로 텍스트 */
+.mobile-vertical {
+  writing-mode: vertical-rl;
+}
+@media (min-width: 1024px) {
+  .mobile-vertical {
+    writing-mode: horizontal-tb;
+  }
+}
+
 /* Pulse animation for "1등" */
 @keyframes rankPulse {
   0%, 100% { transform: scale(1); }
