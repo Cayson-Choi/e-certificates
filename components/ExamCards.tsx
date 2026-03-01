@@ -87,7 +87,11 @@ export default function ExamCards({ initialExams }: { initialExams: Exam[] }) {
               {exam.duration_minutes || 60}분
             </span>
           </div>
-          <h3 className="text-sm lg:text-base font-bold mb-0.5 lg:mb-1">{exam.name}</h3>
+          <h3 className="text-sm lg:text-base font-bold mb-0.5 lg:mb-1 whitespace-nowrap">
+            {exam.name.startsWith('전기') ? (
+              <>전기<br className="lg:hidden" />{exam.name.slice(2)}</>
+            ) : exam.name}
+          </h3>
           <p className="text-[10px] lg:text-xs text-white/70 mb-0.5 lg:mb-2">
             {exam.exam_mode === 'OFFICIAL' && exam.creator_name
               ? `${exam.creator_name}${exam.creator_title ? `(${exam.creator_title})` : ''}`
