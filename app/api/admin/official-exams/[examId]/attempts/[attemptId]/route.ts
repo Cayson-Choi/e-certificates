@@ -44,7 +44,6 @@ export async function GET(
         total_questions,
         total_correct,
         total_score,
-        violation_count,
         grading_status
       `)
       .eq('id', attemptId)
@@ -175,7 +174,6 @@ export async function GET(
         student_id: studentProfile?.student_id || '',
         affiliation: studentProfile?.affiliation || '',
       },
-      violation_count: attempt.violation_count || 0,
       grading_status: attempt.grading_status || 'COMPLETED',
       status: attempt.status,
       started_at: attempt.started_at,

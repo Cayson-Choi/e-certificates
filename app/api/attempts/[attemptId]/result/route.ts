@@ -33,7 +33,6 @@ export async function GET(
         total_questions,
         total_correct,
         total_score,
-        violation_count,
         grading_status,
         exams (
           name,
@@ -151,7 +150,6 @@ export async function GET(
       exam_id: attempt.exam_id,
       exam_name: (attempt.exams as any)?.name || '',
       exam_mode: (attempt.exams as any)?.exam_mode || 'PRACTICE',
-      violation_count: attempt.violation_count || 0,
       grading_status: attempt.grading_status || 'COMPLETED',
       status: attempt.status,
       started_at: attempt.started_at,

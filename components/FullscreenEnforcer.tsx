@@ -1,31 +1,18 @@
 'use client'
 
 import { useEffect, useState, useCallback, useRef } from 'react'
-import ConfirmDialog from '@/components/ConfirmDialog'
 
 interface FullscreenEnforcerProps {
-  attemptId: string
   enabled: boolean
   children: React.ReactNode
 }
 
 export default function FullscreenEnforcer({
-  attemptId,
   enabled,
   children,
 }: FullscreenEnforcerProps) {
   const [showWarning, setShowWarning] = useState(false)
   const isReenteringRef = useRef(false)
-
-  const reportViolation = useCallback(async () => {
-    try {
-      await fetch(`/api/attempts/${attemptId}/violation`, {
-        method: 'POST',
-      })
-    } catch (err) {
-      console.error('위반 기록 실패:', err)
-    }
-  }, [attemptId])
 
   const enterFullscreen = useCallback(() => {
     if (!document.fullscreenEnabled) return
@@ -41,16 +28,13 @@ export default function FullscreenEnforcer({
   useEffect(() => {
     if (!enabled) return
 
-    // 전체화면 API 지원 시에만 진입
     if (document.fullscreenEnabled) {
       enterFullscreen()
     }
 
-    // fullscreenchange: 전체화면 탈출 감지 (API 지원 브라우저만)
     const handleFullscreenChange = () => {
       if (!document.fullscreenElement && !isReenteringRef.current) {
         setShowWarning(true)
-        reportViolation()
       }
     }
 
@@ -66,7 +50,7 @@ export default function FullscreenEnforcer({
         }
       }
     }
-  }, [enabled, enterFullscreen, reportViolation])
+  }, [enabled, enterFullscreen])
 
   const handleWarningClose = () => {
     setShowWarning(false)
@@ -75,19 +59,23 @@ export default function FullscreenEnforcer({
     }
   }
 
+  if (!showWarning) return <>{children}</>
+
   return (
     <>
       {children}
-      <ConfirmDialog
-        open={showWarning}
-        title="경고: 시험 이탈 감지"
-        message="전체화면을 벗어났습니다. 이탈 기록이 저장됩니다."
-        confirmText="확인"
-        cancelText="확인"
-        confirmColor="red"
-        onConfirm={handleWarningClose}
-        onCancel={handleWarningClose}
-      />
+      <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-sm mx-4 border dark:border-gray-700">
+          <h3 className="text-lg font-bold text-red-600 dark:text-red-400 mb-2">전체화면 안내</h3>
+          <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">전체화면을 벗어났습니다. 확인을 누르면 다시 전체화면으로 전환됩니다.</p>
+          <button
+            onClick={handleWarningClose}
+            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
+          >
+            확인
+          </button>
+        </div>
+      </div>
     </>
   )
 }

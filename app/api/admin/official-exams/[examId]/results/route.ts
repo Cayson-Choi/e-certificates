@@ -54,7 +54,6 @@ export async function GET(
         total_questions,
         total_correct,
         total_score,
-        violation_count,
         grading_status
       `)
       .eq('exam_id', examId)
@@ -94,7 +93,6 @@ export async function GET(
         total_questions: a.total_questions,
         total_correct: a.total_correct,
         total_score: a.total_score,
-        violation_count: a.violation_count || 0,
         grading_status: a.grading_status || 'COMPLETED',
         started_at: a.started_at,
         submitted_at: a.submitted_at,

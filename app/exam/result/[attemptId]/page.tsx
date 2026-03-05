@@ -113,11 +113,6 @@ export default function ExamResultPage({
             제출 시간: {new Date(result.submitted_at).toLocaleString('ko-KR')}
           </div>
 
-          {isOfficial && result.violation_count > 0 && (
-            <div className="mt-4 inline-block px-4 py-2 bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 rounded-lg text-sm font-semibold">
-              이탈 기록: {result.violation_count}회
-            </div>
-          )}
         </div>
 
         {/* 과목별 점수 */}

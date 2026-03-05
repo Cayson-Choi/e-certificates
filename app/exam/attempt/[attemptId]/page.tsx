@@ -409,7 +409,7 @@ export default function ExamAttemptPage({
   const totalCount = paper?.questions.length || 0
 
   return (
-    <FullscreenEnforcer attemptId={attemptId} enabled={examMode === 'OFFICIAL'}>
+    <FullscreenEnforcer enabled={examMode === 'OFFICIAL'}>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         {/* 상단 고정 바 */}
         <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 fixed top-0 left-0 right-0 z-50 shadow-sm">
