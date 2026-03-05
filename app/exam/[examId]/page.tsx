@@ -18,9 +18,6 @@ export default function ExamStartPage({ params }: { params: Promise<{ examId: st
 
   // OFFICIAL 시험용 상태
   const [password, setPassword] = useState('')
-  const [studentId, setStudentId] = useState('')
-  const [needStudentId, setNeedStudentId] = useState(false)
-  const [savingStudentId, setSavingStudentId] = useState(false)
   const [officialQuestionCount, setOfficialQuestionCount] = useState<number | null>(null)
   const [officialBySubject, setOfficialBySubject] = useState<Record<number, number>>({})
 
@@ -29,22 +26,8 @@ export default function ExamStartPage({ params }: { params: Promise<{ examId: st
       setExamId(examId)
       loadExamInfo(examId)
       checkActiveAttempt()
-      loadProfile()
     })
   }, [])
-
-  const loadProfile = async () => {
-    try {
-      const res = await fetch('/api/account/profile')
-      if (res.ok) {
-        const data = await res.json()
-        setStudentId(data.profile?.student_id || '')
-        if (!data.profile?.student_id) {
-          setNeedStudentId(true)
-        }
-      }
-    } catch {}
-  }
 
   const checkActiveAttempt = async () => {
     try {
@@ -89,36 +72,6 @@ export default function ExamStartPage({ params }: { params: Promise<{ examId: st
     } catch (err) {
       setError('오류가 발생했습니다')
       setLoading(false)
-    }
-  }
-
-  const handleSaveStudentId = async () => {
-    if (!studentId.trim()) {
-      setError('학번을 입력해주세요')
-      return
-    }
-    setSavingStudentId(true)
-    setError('')
-
-    try {
-      const res = await fetch('/api/profile/student-id', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ student_id: studentId.trim() }),
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        setError(data.error || '학번 저장 실패')
-        setSavingStudentId(false)
-        return
-      }
-
-      setNeedStudentId(false)
-      setSavingStudentId(false)
-    } catch {
-      setError('오류가 발생했습니다')
-      setSavingStudentId(false)
     }
   }
 
@@ -277,34 +230,8 @@ export default function ExamStartPage({ params }: { params: Promise<{ examId: st
               </ul>
             </div>
 
-            {/* 공식 시험: 학번 입력 */}
-            {isOfficial && needStudentId && (
-              <div className="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-700 rounded-lg p-6">
-                <h2 className="font-bold text-lg mb-3 dark:text-white">학번 입력</h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  공식 시험 응시를 위해 학번을 먼저 입력해주세요.
-                </p>
-                <div className="flex gap-3">
-                  <input
-                    type="text"
-                    value={studentId}
-                    onChange={(e) => setStudentId(e.target.value)}
-                    placeholder="학번을 입력하세요"
-                    className="flex-1 px-3 py-2 border dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                  />
-                  <button
-                    onClick={handleSaveStudentId}
-                    disabled={savingStudentId}
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-                  >
-                    {savingStudentId ? '저장 중...' : '저장'}
-                  </button>
-                </div>
-              </div>
-            )}
-
             {/* 공식 시험: 비밀번호 입력 */}
-            {isOfficial && !needStudentId && (
+            {isOfficial && (
               <div className="bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-700 rounded-lg p-6">
                 <h2 className="font-bold text-lg mb-3 dark:text-white">시험 비밀번호</h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
@@ -391,7 +318,7 @@ export default function ExamStartPage({ params }: { params: Promise<{ examId: st
                 </button>
                 <button
                   onClick={handleAbandonAndStart}
-                  disabled={starting || (isOfficial && needStudentId)}
+                  disabled={starting}
                   className="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm"
                 >
                   {starting ? '시작 중...' : '중단하고 새 시험'}
@@ -403,7 +330,7 @@ export default function ExamStartPage({ params }: { params: Promise<{ examId: st
             {!activeAttempt && (
               <button
                 onClick={() => handleStart()}
-                disabled={starting || (isOfficial && needStudentId)}
+                disabled={starting}
                 className="flex-1 px-6 py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {starting ? '시작 중...' : '시험 시작'}

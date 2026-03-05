@@ -42,20 +42,6 @@ export async function POST(request: Request) {
       if (!password || password !== exam.password) {
         return NextResponse.json({ error: '비밀번호가 일치하지 않습니다' }, { status: 403 })
       }
-
-      // 학번 확인
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('student_id')
-        .eq('id', user.id)
-        .single()
-
-      if (!profile?.student_id) {
-        return NextResponse.json(
-          { error: '학번이 등록되지 않았습니다. 학번을 먼저 입력해주세요.' },
-          { status: 400 }
-        )
-      }
     }
 
     // 3. 진행 중인 시험 확인 (시험 종류 상관없이)
