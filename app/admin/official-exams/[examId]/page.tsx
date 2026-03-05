@@ -133,7 +133,6 @@ function printResultsSummary(examName: string, results: any[]) {
       <td>${escapeHtml(r.affiliation || '-')}</td>
       <td style="font-weight:700; color:${scoreColor};">${scoreText}</td>
       <td>${r.total_correct}/${r.total_questions}</td>
-      <td>${r.violation_count > 0 ? r.violation_count + '회' : '0'}</td>
       <td>${r.started_at ? new Date(r.started_at).toLocaleDateString('ko-KR') : new Date(r.submitted_at).toLocaleString('ko-KR')}</td>
     </tr>`
   }).join('')
@@ -162,7 +161,7 @@ function printResultsSummary(examName: string, results: any[]) {
   ${pendingOnly.length > 0 ? `<span>채점 대기: ${pendingOnly.length}명</span>` : ''}
 </div>
 <table>
-  <thead><tr><th>순위</th><th>학번</th><th>이름</th><th>소속</th><th>점수</th><th>정답</th><th>이탈</th><th>시험 날짜</th></tr></thead>
+  <thead><tr><th>순위</th><th>학번</th><th>이름</th><th>소속</th><th>점수</th><th>정답</th><th>시험 날짜</th></tr></thead>
   <tbody>${rows}</tbody>
 </table>
 <script>window.onload=function(){window.print();};window.onafterprint=function(){window.close();};</script>
@@ -847,9 +846,6 @@ export default function OfficialExamDetailPage({
                         정답
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                        이탈
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                         시험 날짜
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
@@ -860,20 +856,13 @@ export default function OfficialExamDetailPage({
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
                     {results.length === 0 && (
                       <tr>
-                        <td colSpan={9} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                        <td colSpan={8} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                           아직 제출된 답안이 없습니다
                         </td>
                       </tr>
                     )}
                     {results.map((r, idx) => (
-                      <tr
-                        key={r.attempt_id}
-                        className={
-                          r.violation_count > 0
-                            ? 'bg-yellow-50 dark:bg-yellow-900/20'
-                            : ''
-                        }
-                      >
+                      <tr key={r.attempt_id}>
                         <td className="px-4 py-3 text-sm dark:text-gray-200">{idx + 1}</td>
                         <td className="px-4 py-3 text-sm font-mono dark:text-gray-200">
                           {r.student_id || '-'}
@@ -906,15 +895,6 @@ export default function OfficialExamDetailPage({
                         </td>
                         <td className="px-4 py-3 text-sm dark:text-gray-200">
                           {r.total_correct}/{r.total_questions}
-                        </td>
-                        <td className="px-4 py-3 text-sm">
-                          {r.violation_count > 0 ? (
-                            <span className="text-yellow-600 dark:text-yellow-400 font-semibold">
-                              {r.violation_count}회
-                            </span>
-                          ) : (
-                            <span className="text-gray-400">0</span>
-                          )}
                         </td>
                         <td className="px-4 py-3 text-sm dark:text-gray-200">
                           {r.started_at ? new Date(r.started_at).toLocaleDateString('ko-KR') : new Date(r.submitted_at).toLocaleString('ko-KR')}

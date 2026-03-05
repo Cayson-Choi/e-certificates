@@ -189,11 +189,6 @@ export default function AdminAttemptDetailPage({
             >
               {passed ? '합격' : '불합격'}
             </div>
-            {result.violation_count > 0 && (
-              <div className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 rounded-full text-sm font-semibold">
-                이탈 {result.violation_count}회
-              </div>
-            )}
             {result.grading_status === 'PENDING_MANUAL' && (
               <div className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 rounded-full text-sm font-semibold">
                 주관식 채점 대기
