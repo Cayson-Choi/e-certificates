@@ -40,10 +40,29 @@ export default function Butterfly() {
   }, [hearts])
 
   const speakingRef = useRef(false)
+  const voicesLoadedRef = useRef(false)
+
+  // 음성 목록 미리 로드 (최신 Android Chrome 대응)
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return
+    const loadVoices = () => {
+      const voices = window.speechSynthesis.getVoices()
+      if (voices.length > 0) voicesLoadedRef.current = true
+    }
+    loadVoices()
+    window.speechSynthesis.addEventListener('voiceschanged', loadVoices)
+    return () => {
+      window.speechSynthesis.removeEventListener('voiceschanged', loadVoices)
+    }
+  }, [])
 
   const playGreeting = useCallback(() => {
     if (speakingRef.current || typeof window === 'undefined' || !window.speechSynthesis) return
     speakingRef.current = true
+
+    // 최신 Chrome/Samsung 버그 대응: cancel() 선행 호출
+    window.speechSynthesis.cancel()
+
     const name = userNameRef.current
     const text = name ? `안녕하세요 ${name}님!` : '로그인해주세요'
     const utterance = new SpeechSynthesisUtterance(text)
@@ -51,9 +70,19 @@ export default function Butterfly() {
     utterance.rate = 1
     utterance.pitch = 1.3
     utterance.volume = 0.8
+
+    // 한국어 음성이 있으면 명시적으로 지정
+    const voices = window.speechSynthesis.getVoices()
+    const koVoice = voices.find(v => v.lang.startsWith('ko'))
+    if (koVoice) utterance.voice = koVoice
+
     utterance.onend = () => { speakingRef.current = false }
     utterance.onerror = () => { speakingRef.current = false }
-    window.speechSynthesis.speak(utterance)
+
+    // 약간의 지연 후 speak (cancel 직후 바로 호출하면 무시되는 기기 대응)
+    setTimeout(() => {
+      window.speechSynthesis.speak(utterance)
+    }, 50)
   }, [])
 
   const handleClick = useCallback(() => {
