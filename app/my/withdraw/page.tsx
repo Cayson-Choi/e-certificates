@@ -68,7 +68,7 @@ export default function WithdrawPage() {
             <div className="bg-gray-100 dark:bg-gray-700 border-l-4 border-gray-500 p-4">
               <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-2">주의사항</h3>
               <ul className="text-sm text-gray-800 dark:text-gray-300 space-y-1">
-                <li>• 탈퇴 후에는 동일한 이메일로 재가입할 수 없습니다</li>
+                <li>• 탈퇴 후에는 동일한 계정으로 재가입할 수 없습니다</li>
                 <li>• 모든 데이터는 즉시 삭제되며 복구할 수 없습니다</li>
                 <li>• 탈퇴 처리는 즉시 완료됩니다</li>
               </ul>

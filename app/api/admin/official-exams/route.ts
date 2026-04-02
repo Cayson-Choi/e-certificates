@@ -34,7 +34,7 @@ export async function GET() {
       .from('exams')
       .select(`
         id, name, exam_mode, password, duration_minutes, created_at,
-        creator_name, creator_title, is_published,
+        is_published,
         subjects (id, name, order_no)
       `)
       .eq('exam_mode', 'OFFICIAL')
@@ -93,13 +93,6 @@ export async function POST(request: Request) {
       )
     }
 
-    // 관리자 프로필에서 출제자 정보 가져오기
-    const { data: adminProfile } = await supabase
-      .from('profiles')
-      .select('name, affiliation')
-      .eq('id', user.id)
-      .single()
-
     const adminClient = createAdminClient()
 
     // 1. exams 테이블에 삽입
@@ -110,8 +103,6 @@ export async function POST(request: Request) {
         exam_mode: 'OFFICIAL',
         password,
         duration_minutes: duration_minutes || 60,
-        creator_name: adminProfile?.name || null,
-        creator_title: adminProfile?.affiliation || null,
       })
       .select('id')
       .single()

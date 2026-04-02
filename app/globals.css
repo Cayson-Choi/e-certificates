@@ -84,12 +84,6 @@ body {
 .float-animation-delay2 { animation: float 3s ease-in-out 1s infinite; }
 .crown-bounce { animation: crownBounce 2s ease-in-out infinite; }
 
-@keyframes wingShimmer {
-  0%, 100% { filter: drop-shadow(0 0 3px #ffd700) brightness(1); }
-  25% { filter: drop-shadow(0 0 8px #ffec8b) brightness(1.5); }
-  50% { filter: drop-shadow(0 0 5px #ffd700) brightness(1.2); }
-  75% { filter: drop-shadow(0 0 10px #fff7a0) brightness(1.6); }
-}
 @keyframes sparkleText {
   0% { color: #ffa0a0; text-shadow: 0 0 10px rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,1), 0 0 20px rgba(255,160,160,0.6); }
   14% { color: #ffcb8a; text-shadow: 0 0 10px rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,1), 0 0 20px rgba(255,203,138,0.6); }
@@ -207,113 +201,6 @@ body {
   animation: rankPulse 2s ease-in-out infinite;
 }
 
-/* Butterfly animation */
-@keyframes butterflyPath {
-  0%   { top: 35%; left: -5%; }
-  8%   { top: 20%; left: 10%; }
-  16%  { top: 30%; left: 25%; }
-  24%  { top: 12%; left: 40%; }
-  32%  { top: 25%; left: 55%; }
-  40%  { top: 45%; left: 70%; }
-  48%  { top: 20%; left: 82%; }
-  56%  { top: 40%; left: 90%; }
-  64%  { top: 55%; left: 75%; }
-  72%  { top: 35%; left: 55%; }
-  80%  { top: 50%; left: 35%; }
-  88%  { top: 30%; left: 18%; }
-  96%  { top: 40%; left: 5%; }
-  100% { top: 35%; left: -5%; }
-}
-
-@keyframes butterflyTilt {
-  0%   { transform: rotate(25deg) scaleX(1); }
-  8%   { transform: rotate(-15deg) scaleX(1); }
-  16%  { transform: rotate(20deg) scaleX(1); }
-  24%  { transform: rotate(-20deg) scaleX(1); }
-  32%  { transform: rotate(15deg) scaleX(1); }
-  40%  { transform: rotate(25deg) scaleX(1); }
-  48%  { transform: rotate(-20deg) scaleX(1); }
-  56%  { transform: rotate(30deg) scaleX(-1); }
-  64%  { transform: rotate(-15deg) scaleX(-1); }
-  72%  { transform: rotate(-25deg) scaleX(-1); }
-  80%  { transform: rotate(20deg) scaleX(-1); }
-  88%  { transform: rotate(-15deg) scaleX(-1); }
-  96%  { transform: rotate(25deg) scaleX(-1); }
-  100% { transform: rotate(25deg) scaleX(1); }
-}
-
-@keyframes butterflyBob {
-  0%, 100% { margin-top: 0; }
-  50% { margin-top: -12px; }
-}
-
-@keyframes wingFlapLeft {
-  0%   { transform: rotateY(0deg); }
-  50%  { transform: rotateY(75deg); }
-  100% { transform: rotateY(0deg); }
-}
-
-@keyframes wingFlapRight {
-  0%   { transform: rotateY(0deg); }
-  50%  { transform: rotateY(-75deg); }
-  100% { transform: rotateY(0deg); }
-}
-
-.butterfly-wrap {
-  position: fixed;
-  z-index: 50;
-  pointer-events: none;
-  will-change: top, left;
-  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25));
-  animation: butterflyPath 30s ease-in-out infinite, butterflyBob 1.5s ease-in-out infinite, wingShimmer 1.5s ease-in-out infinite;
-}
-
-.butterfly-svg {
-  animation: butterflyTilt 30s ease-in-out infinite;
-  overflow: visible;
-}
-
-.wing-upper-left, .wing-lower-left {
-  transform-origin: 0% 50%;
-  animation: wingFlapLeft 0.25s ease-in-out infinite;
-}
-
-.wing-upper-right, .wing-lower-right {
-  transform-origin: 0% 50%;
-  animation: wingFlapRight 0.25s ease-in-out infinite;
-}
-
-.butterfly-clickable {
-  pointer-events: auto;
-  cursor: pointer;
-}
-
-/* Heart particles */
-@keyframes heartBurst {
-  0% {
-    opacity: 1;
-    transform: translate(0, 0) scale(0.2);
-  }
-  30% {
-    opacity: 1;
-    transform: translate(calc(var(--hx) * 0.5), calc(var(--hy) * 0.5)) scale(1.2);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(var(--hx), calc(var(--hy) - 50px)) scale(0.4);
-  }
-}
-
-.heart-particle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  pointer-events: none;
-  animation: heartBurst 1.5s ease-out forwards;
-  z-index: 60;
-  text-shadow: 0 0 6px currentColor;
-}
-
 /* Reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
   .float-animation,
@@ -322,13 +209,7 @@ body {
   .crown-bounce,
   .pulse-gold,
   .animate-slide-in-right,
-  .rank-pulse,
-  .butterfly-wrap,
-  .butterfly-svg,
-  .wing-upper-left,
-  .wing-lower-left,
-  .wing-upper-right,
-  .wing-lower-right {
+  .rank-pulse {
     animation: none;
   }
 }

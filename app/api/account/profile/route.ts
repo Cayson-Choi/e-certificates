@@ -52,18 +52,15 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
     }
 
-    const { affiliation, phone, student_id } = await request.json()
+    const { phone } = await request.json()
 
     // 유효성 검사
-    if (!affiliation || !phone) {
-      return NextResponse.json({ error: '모든 필드를 입력해주세요' }, { status: 400 })
+    if (!phone) {
+      return NextResponse.json({ error: '전화번호를 입력해주세요' }, { status: 400 })
     }
 
     // 프로필 업데이트 (이름과 이메일은 수정 불가)
-    const updateData: any = { affiliation, phone }
-    if (student_id !== undefined) {
-      updateData.student_id = student_id || null
-    }
+    const updateData: any = { phone }
 
     const { data: updatedProfile, error } = await supabase
       .from('profiles')
