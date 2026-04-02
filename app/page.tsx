@@ -16,18 +16,15 @@ export default async function Home() {
     <div>
       {/* Hero + Ranking */}
       <section>
-        <HeroSection />
-        <div className="bg-gradient-to-b from-[#0c0c1d] to-gray-50 dark:to-gray-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4 lg:pb-6">
-            <Leaderboard exams={practiceExams} />
-          </div>
-        </div>
+        <HeroSection>
+          <Leaderboard exams={practiceExams} />
+        </HeroSection>
       </section>
 
       {/* Exam cards */}
       <section
         id="exams"
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-2 relative z-10 pb-10"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 relative z-10 pb-10"
       >
         <ExamCards initialExams={visibleExams} />
       </section>
