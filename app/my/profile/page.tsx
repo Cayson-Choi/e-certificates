@@ -11,14 +11,7 @@ export default function ProfilePage() {
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [profile, setProfile] = useState<any>(null)
   const [formData, setFormData] = useState({
-    affiliation: '',
     phone: '',
-    student_id: '',
-  })
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
   })
 
   useEffect(() => {
@@ -37,9 +30,7 @@ export default function ProfilePage() {
         const data = await res.json()
         setProfile(data.profile)
         setFormData({
-          affiliation: data.profile?.affiliation || '',
           phone: data.profile?.phone || '',
-          student_id: data.profile?.student_id || '',
         })
       }
     } catch (err) {
@@ -68,29 +59,6 @@ export default function ProfilePage() {
         return
       }
 
-      // 2. 비밀번호 변경 (입력된 경우에만)
-      if (passwordData.currentPassword || passwordData.newPassword || passwordData.confirmPassword) {
-        const passwordRes = await fetch('/api/account/password', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(passwordData),
-        })
-
-        const passwordResData = await passwordRes.json()
-
-        if (!passwordRes.ok) {
-          alert(passwordResData.error || '비밀번호 변경 실패')
-          return
-        }
-
-        // 비밀번호 변경 성공 시 필드 초기화
-        setPasswordData({
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: '',
-        })
-      }
-
       // 성공 피드백 (UI 블로킹 없음)
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 2000)
@@ -116,7 +84,7 @@ export default function ProfilePage() {
         {/* 헤더 */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">👤 프로필 수정</h1>
-          <p className="text-gray-600 dark:text-gray-400">소속과 전화번호를 수정할 수 있습니다</p>
+          <p className="text-gray-600 dark:text-gray-400">전화번호를 수정할 수 있습니다</p>
         </div>
 
         {/* 프로필 수정 폼 (통합) */}
@@ -146,40 +114,6 @@ export default function ProfilePage() {
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">이메일은 수정할 수 없습니다</p>
             </div>
 
-            {/* 소속 (수정 가능) */}
-            <div>
-              <label className="block text-sm font-medium mb-1 dark:text-gray-200">소속 *</label>
-              <select
-                value={formData.affiliation}
-                onChange={(e) =>
-                  setFormData({ ...formData, affiliation: e.target.value })
-                }
-                className="w-full px-3 py-2 border dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                required
-              >
-                <option value="">선택하세요</option>
-                <option value="교수">교수</option>
-                <option value="전기반">전기반</option>
-                <option value="소방반">소방반</option>
-                <option value="신중년">신중년</option>
-              </select>
-            </div>
-
-            {/* 학번 (수정 가능) */}
-            <div>
-              <label className="block text-sm font-medium mb-1 dark:text-gray-200">학번</label>
-              <input
-                type="text"
-                value={formData.student_id}
-                onChange={(e) =>
-                  setFormData({ ...formData, student_id: e.target.value })
-                }
-                className="w-full px-3 py-2 border dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                placeholder="학번을 입력하세요"
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">공식 시험 응시 시 필수입니다</p>
-            </div>
-
             {/* 전화번호 (수정 가능) */}
             <div>
               <label className="block text-sm font-medium mb-1 dark:text-gray-200">전화번호 *</label>
@@ -192,50 +126,6 @@ export default function ProfilePage() {
                 className="w-full px-3 py-2 border dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                 placeholder="010-1234-5678"
                 required
-              />
-            </div>
-
-            {/* 현재 비밀번호 */}
-            <div>
-              <label className="block text-sm font-medium mb-1 dark:text-gray-200">현재 비밀번호</label>
-              <input
-                type="password"
-                value={passwordData.currentPassword}
-                onChange={(e) =>
-                  setPasswordData({ ...passwordData, currentPassword: e.target.value })
-                }
-                className="w-full px-3 py-2 border dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                placeholder="비밀번호를 변경하려면 입력하세요"
-              />
-            </div>
-
-            {/* 새 비밀번호 */}
-            <div>
-              <label className="block text-sm font-medium mb-1 dark:text-gray-200">새 비밀번호</label>
-              <input
-                type="password"
-                value={passwordData.newPassword}
-                onChange={(e) =>
-                  setPasswordData({ ...passwordData, newPassword: e.target.value })
-                }
-                className="w-full px-3 py-2 border dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                placeholder="새 비밀번호 (최소 6자)"
-                minLength={6}
-              />
-            </div>
-
-            {/* 새 비밀번호 확인 */}
-            <div>
-              <label className="block text-sm font-medium mb-1 dark:text-gray-200">새 비밀번호 확인</label>
-              <input
-                type="password"
-                value={passwordData.confirmPassword}
-                onChange={(e) =>
-                  setPasswordData({ ...passwordData, confirmPassword: e.target.value })
-                }
-                className="w-full px-3 py-2 border dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                placeholder="새 비밀번호를 다시 입력하세요"
-                minLength={6}
               />
             </div>
 
