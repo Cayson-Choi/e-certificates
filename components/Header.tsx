@@ -40,8 +40,7 @@ export default async function Header() {
               </svg>
             </div>
             <div className="flex flex-col">
-              <span className="text-base font-bold text-gray-900 dark:text-white tracking-tight leading-tight whitespace-nowrap">스마트 전기과</span>
-              <span className="text-[10px] text-gray-400 dark:text-gray-500 leading-tight">화성폴리텍대학</span>
+              <span className="text-base font-bold text-gray-900 dark:text-white tracking-tight leading-tight whitespace-nowrap">전기짱</span>
             </div>
           </Link>
 

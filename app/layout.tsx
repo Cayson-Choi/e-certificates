@@ -6,13 +6,12 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import AuthListener from "@/components/AuthListener";
 
 export const metadata: Metadata = {
-  title: "스마트 전기과 - 화성폴리텍대학",
+  title: "전기짱",
   description: "모의고사를 풀고, 즉시 채점하고, 랭킹으로 경쟁하세요.",
   openGraph: {
-    title: "스마트 전기과 - 화성폴리텍대학",
+    title: "전기짱",
     description: "모의고사를 풀고, 즉시 채점하고, 랭킹으로 경쟁하세요.",
-    siteName: "화성폴리텍대학 스마트 전기과",
-    images: [{ url: "/hero-bg.png" }],
+    siteName: "전기짱",
   },
 };
 

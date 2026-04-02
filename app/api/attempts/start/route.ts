@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     }
 
     // 2. exam_id 검증
-    const { exam_id, abandon_existing, password } = await request.json()
+    const { exam_id, password } = await request.json()
 
     if (!exam_id) {
       return NextResponse.json({ error: 'exam_id가 필요합니다' }, { status: 400 })
@@ -44,48 +44,19 @@ export async function POST(request: Request) {
       }
     }
 
-    // 3. 진행 중인 시험 확인 (시험 종류 상관없이)
+    // 3. 진행 중인 시험이 있으면 자동 삭제 (기록 남기지 않음)
     const { data: existingAttempts } = await supabase
       .from('attempts')
-      .select('id, exam_id, status, started_at, expires_at')
+      .select('id')
       .eq('user_id', user.id)
       .eq('status', 'IN_PROGRESS')
-      .order('started_at', { ascending: false })
-      .limit(1)
 
     if (existingAttempts && existingAttempts.length > 0) {
-      const existing = existingAttempts[0]
-      const now = new Date()
-      const expiresAt = new Date(existing.expires_at)
-
-      if (now < expiresAt) {
-        // abandon_existing 플래그가 있으면 기존 시험 중단
-        if (abandon_existing) {
-          await supabase
-            .from('attempts')
-            .update({ status: 'EXPIRED' })
-            .eq('id', existing.id)
-
-          await supabase.from('attempt_items').delete().eq('attempt_id', existing.id)
-          await supabase.from('subject_scores').delete().eq('attempt_id', existing.id)
-        } else {
-          // 만료 전이면 이어풀기
-          return NextResponse.json({
-            attempt_id: existing.id,
-            exam_id: existing.exam_id,
-            is_existing: true,
-            message: '이미 진행 중인 시험이 있습니다',
-          })
-        }
-      } else {
-        // 만료됨 - EXPIRED 처리 및 답안 삭제
-        await supabase
-          .from('attempts')
-          .update({ status: 'EXPIRED' })
-          .eq('id', existing.id)
-
+      for (const existing of existingAttempts) {
         await supabase.from('attempt_items').delete().eq('attempt_id', existing.id)
         await supabase.from('subject_scores').delete().eq('attempt_id', existing.id)
+        await supabase.from('attempt_questions').delete().eq('attempt_id', existing.id)
+        await supabase.from('attempts').delete().eq('id', existing.id)
       }
     }
 

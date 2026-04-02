@@ -1,7 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import Leaderboard from '@/components/Leaderboard'
 import ExamCards from '@/components/ExamCards'
-import Butterfly from '@/components/Butterfly'
 
 export const revalidate = 60
 
@@ -15,7 +14,7 @@ function getStaticSupabase() {
 
 export default async function Home() {
   const supabase = getStaticSupabase()
-  const { data: exams } = await supabase.from('exams').select('id, name, exam_mode, duration_minutes, created_at, creator_name, creator_title, is_published, sort_order').order('sort_order')
+  const { data: exams } = await supabase.from('exams').select('id, name, exam_mode, duration_minutes, created_at, is_published, sort_order').order('sort_order')
 
   const practiceExams = exams?.filter(e => e.exam_mode !== 'OFFICIAL') || []
   const visibleExams = exams?.filter(e => e.exam_mode !== 'OFFICIAL' || e.is_published) || []
@@ -23,27 +22,14 @@ export default async function Home() {
   return (
     <div>
       {/* Hero + Ranking */}
-      <section className="relative overflow-hidden">
-        {/* Background image */}
-        <div
-          className="absolute inset-0 bg-no-repeat bg-[length:380%_auto] lg:bg-cover bg-[position:54%_-120px] lg:bg-[position:center_-120px]"
-          style={{ backgroundImage: "url('/hero-bg.png')" }}
-        />
-        {/* Light overlay */}
-        <div className="absolute inset-0" />
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 lg:pt-10 pb-16 lg:pb-20">
+      <section className="bg-gradient-to-b from-blue-600 to-blue-800 dark:from-blue-900 dark:to-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 lg:pt-10 pb-16 lg:pb-20">
           {/* Compact hero text */}
           <div className="text-center mb-4">
-            <h1 className="text-4xl lg:text-5xl font-extrabold text-white mb-3 leading-tight tracking-tight hero-text-stroke">
-              화성폴리텍대학
-              <br className="lg:hidden" />
-              {' '}
-              <span className="font-black inline-block -mt-5 lg:mt-0 lg:inline">
-                <span className="text-sky-300 sparkle-text" style={{ fontFamily: "'Nanum Pen Script', cursive", fontSize: '1.9em', verticalAlign: '-0.15em' }}>스마트</span> <span className="text-sky-300">전기과</span>
-              </span>
+            <h1 className="text-4xl lg:text-5xl font-extrabold text-white mb-3 leading-tight tracking-tight">
+              전기짱
             </h1>
-            <p className="text-base text-white leading-relaxed hero-subtext-stroke -mt-1 lg:mt-0">
+            <p className="text-base text-white/80 leading-relaxed">
               모의고사를 풀고, 즉시 채점하고, 랭킹으로 경쟁하세요.
             </p>
           </div>
@@ -179,7 +165,6 @@ export default async function Home() {
           </div>
         </div>
       </section>
-      <Butterfly />
     </div>
   )
 }

@@ -9,8 +9,6 @@ interface Exam {
   name: string
   exam_mode: string
   duration_minutes: number
-  creator_name: string | null
-  creator_title: string | null
   is_published: boolean
 }
 
@@ -50,7 +48,7 @@ export default function ExamCards({ initialExams }: { initialExams: Exam[] }) {
     const fetchExams = () => {
       supabase
         .from('exams')
-        .select('id, name, exam_mode, duration_minutes, creator_name, creator_title, is_published, sort_order')
+        .select('id, name, exam_mode, duration_minutes, is_published, sort_order')
         .order('sort_order')
         .then(({ data }) => {
           if (data) {
@@ -89,9 +87,7 @@ export default function ExamCards({ initialExams }: { initialExams: Exam[] }) {
           </div>
           <h3 className="text-sm lg:text-base font-bold mb-0.5 lg:mb-1">{exam.name}</h3>
           <p className="text-[10px] lg:text-xs text-white/70 mb-0.5 lg:mb-2">
-            {exam.exam_mode === 'OFFICIAL' && exam.creator_name
-              ? `${exam.creator_name}${exam.creator_title ? `(${exam.creator_title})` : ''}`
-              : examCardDescriptions[index % examCardDescriptions.length]}
+            {examCardDescriptions[index % examCardDescriptions.length]}
           </p>
           <div className="flex items-center text-[10px] lg:text-xs font-medium text-white/90 group-hover:text-white transition-colors">
             시험 응시하기

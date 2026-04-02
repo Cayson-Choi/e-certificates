@@ -4,19 +4,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // 공개 페이지는 인증 체크 없이 바로 통과
-  const publicPaths = ['/', '/login', '/register', '/signup']
-  const isPublic = publicPaths.includes(pathname)
-
-  // API 라우트 중 공개 API도 바로 통과
-  const publicApiPaths = ['/api/home/leaderboard', '/api/exams', '/api/auth']
-  const isPublicApi = publicApiPaths.some(p => pathname.startsWith(p))
-
-  if (isPublic || isPublicApi) {
-    return NextResponse.next()
-  }
-
-  // 보호된 경로만 인증 체크
+  // 모든 경로에서 쿠키 갱신을 위해 Supabase 클라이언트 생성
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -53,6 +41,16 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
+  }
+
+  // 공개 페이지/API는 쿠키 갱신 후 통과
+  const publicPaths = ['/', '/login', '/register', '/signup']
+  const isPublic = publicPaths.includes(pathname)
+  const publicApiPaths = ['/api/home/leaderboard', '/api/exams', '/api/auth']
+  const isPublicApi = publicApiPaths.some(p => pathname.startsWith(p))
+
+  if (isPublic || isPublicApi) {
+    return supabaseResponse
   }
 
   // 보호된 페이지: 로그인 필요

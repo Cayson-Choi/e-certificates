@@ -145,9 +145,16 @@ const QuestionCard = memo(function QuestionCard({
 })
 
 // --- QuitButton: isolated so opening the quit dialog doesn't re-render the question list ---
-function QuitButton() {
+function QuitButton({ attemptId }: { attemptId: string }) {
   const router = useRouter()
   const [showQuit, setShowQuit] = useState(false)
+
+  const handleQuit = async () => {
+    setShowQuit(false)
+    // 시험 기록 완전 삭제
+    await fetch(`/api/attempts/${attemptId}/abandon`, { method: 'POST' }).catch(() => {})
+    router.push('/')
+  }
 
   return (
     <>
@@ -160,13 +167,10 @@ function QuitButton() {
       <ConfirmDialog
         open={showQuit}
         title="시험 중단"
-        message={"시험을 중단하시겠습니까?\n작성한 답안은 저장되지 않습니다."}
+        message={"시험을 중단하시겠습니까?\n작성한 답안은 모두 삭제됩니다."}
         confirmText="중단하기"
         confirmColor="red"
-        onConfirm={() => {
-          setShowQuit(false)
-          router.push('/')
-        }}
+        onConfirm={handleQuit}
         onCancel={() => setShowQuit(false)}
       />
     </>
@@ -430,7 +434,7 @@ export default function ExamAttemptPage({
               </div>
               <div className="flex items-center gap-3">
                 <ExamTimer expiresAt={paper.expires_at} onExpire={handleExpire} />
-                <QuitButton />
+                <QuitButton attemptId={attemptId} />
               </div>
             </div>
           </div>
