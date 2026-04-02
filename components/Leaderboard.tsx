@@ -210,7 +210,7 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
         <div className="grid lg:grid-cols-5 gap-3 max-w-[44rem] mx-auto items-stretch">
           {/* Left: Today Top 3 */}
           <div className="lg:col-span-3 h-full">
-            <div className="bg-gradient-to-b from-yellow-900/80 via-gray-900 to-gray-900 border border-gray-700 rounded-2xl shadow-xl gold-glow h-full">
+            <div className="bg-gray-900/80 border border-gray-700 rounded-2xl shadow-xl h-full">
               {first ? (
                 <>
                   {/* 1st place highlight */}
@@ -297,7 +297,7 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
           <div className="lg:col-span-2 flex flex-row gap-3 lg:grid lg:grid-rows-2 lg:gap-2.5">
             {/* My rank card */}
             {data.my_rank != null && data.my_score != null ? (
-              <div className="flex-1 min-w-0 bg-gradient-to-br from-blue-900 to-gray-900 border border-blue-500/40 rounded-2xl p-2.5 lg:p-3 shadow-xl">
+              <div className="flex-1 min-w-0 bg-gray-900/80 border border-gray-700 rounded-2xl p-2.5 lg:p-3 shadow-xl">
                 <div className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-1">
                   내 순위
                 </div>
@@ -350,7 +350,7 @@ export default function Leaderboard({ exams }: LeaderboardProps) {
                 </a>
               </div>
             ) : (
-              <div className="flex-1 min-w-0 bg-gradient-to-br from-blue-900 to-gray-900 border border-blue-500/40 rounded-2xl p-2.5 lg:p-3 shadow-xl">
+              <div className="flex-1 min-w-0 bg-gray-900/80 border border-gray-700 rounded-2xl p-2.5 lg:p-3 shadow-xl">
                 <div className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-1">
                   내 순위
                 </div>

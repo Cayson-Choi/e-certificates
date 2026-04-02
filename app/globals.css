@@ -139,18 +139,15 @@ body {
 
 /* Hero section */
 .hero-bg {
-  background: linear-gradient(135deg, #0c0c1d 0%, #1a1028 30%, #0d1117 70%, #0c0c1d 100%);
+  background: #000000;
 }
 
 .dark .hero-bg {
-  background: linear-gradient(135deg, #050510 0%, #100a1a 30%, #080b10 70%, #050510 100%);
+  background: #000000;
 }
 
 .hero-gradient {
-  background:
-    radial-gradient(ellipse at 20% 50%, rgba(255, 170, 50, 0.06) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 30%, rgba(200, 140, 255, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(255, 200, 100, 0.03) 0%, transparent 50%);
+  background: transparent;
 }
 
 .hero-title {
